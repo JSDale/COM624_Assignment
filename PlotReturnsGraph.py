@@ -8,4 +8,4 @@ filepath = os.getcwd()
 def plot_returns(return_value):
     plt.figure()
     plt.plot(return_value)
-    plt.savefig(filepath + '/returns_graph.png')
+    plt.savefig(filepath + '/Data/returns_graph.png')

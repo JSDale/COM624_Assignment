@@ -8,7 +8,7 @@ filepath = os.getcwd()
 
 
 def plot_rolling_average(close_px, moving_average):
-    mpl.rc('figure', figsize=(8, 7))
+    mpl.rc('figure', figsize=(20, 15))
     mpl.__version__
 
     style.use('ggplot')
@@ -16,4 +16,4 @@ def plot_rolling_average(close_px, moving_average):
     close_px.plot(label='AAPL')
     moving_average.plot(label='mavg')
     plt.legend()
-    plt.savefig(filepath + '/rolling_graph.png')
+    plt.savefig(filepath + '/Data/rolling_graph.png')

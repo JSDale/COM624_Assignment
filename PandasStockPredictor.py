@@ -11,12 +11,12 @@ def get_stock_data():
     
     df = web.DataReader("AAPL", 'yahoo', start_date, end_date)
     filepath = os.getcwd()
-    # df.to_json(filepath+'/data.json')
+    df.to_json(filepath+'/Data/raw_data.json')
     df.tail()
 
     close_px = df['Adj Close']
     rolling_mean = close_px.rolling(window=100).mean()
-    # rolling_mean.to_json(filepath+'/rolling_data.json')
+    rolling_mean.to_json(filepath+'/Data/rolling_data.json')
 
     PlottingOnGraph.plot_rolling_average(close_px, rolling_mean)
     rets = close_px / close_px.shift(1) - 1
