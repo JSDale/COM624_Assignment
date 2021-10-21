@@ -1,5 +1,6 @@
 import datetime
 import pandas_datareader.data as web
+import os
 
 
 def get_stock_data():
@@ -7,6 +8,8 @@ def get_stock_data():
     end_date = datetime.datetime(2021, 10, 11)
     
     df = web.DataReader("AAPL", 'yahoo', start_date, end_date)
+    filepath = os.getcwd()
+    df.to_json(filepath+'/data.json')
     df.tail()
 
     close_px = df['Adj Close']
