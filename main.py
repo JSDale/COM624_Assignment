@@ -15,4 +15,4 @@ def main():
 
 
 if __name__ == "__main__":
-    psp.print_rolling_mean_last_100_windows()
+    psp.render_rolling_average_to_graph()
