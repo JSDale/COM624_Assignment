@@ -2,19 +2,14 @@ import sys
 
 from MessageBroker import ActiveConnecitons
 from MessageBroker import RabbitMqRequestReceiver
+from StockPredicting import PredictingTheMarket
 from StockPredicting import CompareCompetitors
 
 
 def main():
     try:
-        # psp.render_rolling_average_to_graph()
-
-        # rabbitmq_request_receiver = RabbitMqRequestReceiver.RabbitMqRequestReceiver()
-        # rabbitmq_request_receiver.initialize_request_receiver()
-
-        compare_competition = CompareCompetitors.CompareCompetitors()
-        tickers = ['AAPL', 'GOOG', 'MSFT']
-        compare_competition.do_stuff(tickers)
+        rabbitmq_request_receiver = RabbitMqRequestReceiver.RabbitMqRequestReceiver()
+        rabbitmq_request_receiver.initialize_request_receiver()
 
     except KeyboardInterrupt:
         print('closing active connections, stand by...')
@@ -24,5 +19,17 @@ def main():
         ActiveConnecitons.close_connections()
 
 
+def prediction_testing():
+    predicting = PredictingTheMarket.PredictingTheMarket()
+    ticker = 'AAPL'
+    dataframe = predicting.get_stock_dataframe(ticker)
+    percentages = predicting.get_percentages(dataframe)
+
+    #var = CompareCompetitors.CompareCompetitors()
+    #tickers = ['AAPL']
+    #var.do_stuff(tickers)
+
+
 if __name__ == "__main__":
-    main()
+    # main()
+    prediction_testing()
