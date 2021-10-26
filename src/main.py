@@ -1,17 +1,8 @@
-import yfinance as yf
 from StockPredicting import PandasStockPredictor as psp
 
 
 def main():
-    msft = yf.Ticker("MSFT")
-
-    # get stock info
-    # print(msft.info)
-
-    # get historical market data
-    historical_market_data = msft.history(period="5d")
-
-    print(historical_market_data)
+    print('hello world')
 
 
 if __name__ == "__main__":
