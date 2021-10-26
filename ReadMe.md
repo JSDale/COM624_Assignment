@@ -10,13 +10,20 @@ I plan to use python 3.9 for the backend, implementing a message broker. This gi
 front end. I plan to use a simple C# GUI for the technical demonstrator. The python backend will run in a docker
 container.
 
+## Prerequisite
+
+- Python 3.9
+- Erlang
+- RabbitMQ service running
+- dotnet runtime 5
+
 ## How to run the application
 
 
 
 ## How to run application in dev environment
 
-I used pycharm to create the python backend, wit a virtual environment. To get you up and running with the dependancies,
+I used pycharm to create the python backend, wit a virtual environment. To get you up and running with the dependencies,
 I also included a requirements.txt file.
 
 - First, run ```sh python3 -m venv <filepath of virtual env you want>```
