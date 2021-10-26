@@ -12,6 +12,7 @@ client_id = f'stock-predictions-{random.randint(0, 1000)}'
 username = 'user'
 password = 'public'
 
+
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
         if rc == 0:

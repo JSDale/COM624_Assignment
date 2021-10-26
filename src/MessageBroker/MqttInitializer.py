@@ -1,7 +1,7 @@
 import random
 
 from paho.mqtt import client as mqtt_client
-from mqtt import Subscriber as sub
+from MessageBroker import Subscriber as sub
 
 broker = 'broker.emqx.io'
 port = 1883

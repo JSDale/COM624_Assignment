@@ -1,5 +1,5 @@
 from paho.mqtt import client as mqtt_client
-from mqtt import MqttInitializer
+from MessageBroker import MqttInitializer
 
 
 def subscribe(client: mqtt_client):
