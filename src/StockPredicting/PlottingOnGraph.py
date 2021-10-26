@@ -16,4 +16,4 @@ def plot_rolling_average(close_px, moving_average):
     close_px.plot(label='AAPL')
     moving_average.plot(label='mavg')
     plt.legend()
-    plt.savefig(filepath + '/Data/rolling_graph.png')
+    plt.savefig(filepath + '/Stock_Data/rolling_graph.png')

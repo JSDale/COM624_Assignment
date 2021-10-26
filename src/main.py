@@ -1,5 +1,5 @@
 import yfinance as yf
-import PandasStockPredictor as psp
+from StockPredicting import PandasStockPredictor as psp
 
 
 def main():

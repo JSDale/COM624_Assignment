@@ -1,8 +1,8 @@
 import datetime
 import pandas_datareader.data as web
 import os
-import PlottingOnGraph
-import PlotReturnsGraph
+from StockPredicting import PlottingOnGraph
+from StockPredicting import PlotReturnsGraph
 
 
 filepath = os.getcwd()
@@ -20,7 +20,7 @@ def render_rolling_average_to_graph():
         PlotReturnsGraph.plot_returns(calculate_return_value(closing_stock_price))
         print('graphs plotted')
     except Exception as e:
-        print(f"error: {e.message}")
+        print(f"error: {e.__str__()}")
 
 
 def get_closing_stock_price(start_date, end_date, ticker):
@@ -33,12 +33,16 @@ def get_closing_stock_price(start_date, end_date, ticker):
 
 
 def save_to_json(raw_dataframe, filename):
-    raw_dataframe.to_json(f'{filepath}/Data/{filename}.json')
+    data_dir = '/Stock_Data/'
+    filepath_exists = os.path.exists(f'{filepath}{data_dir}')
+    if not filepath_exists:
+        os.mkdir(f'{filepath}{data_dir}')
+    raw_dataframe.to_json(f'{filepath}{data_dir}{filename}')
 
 
 def get_moving_average(closing_stock_price):
     rolling_mean = closing_stock_price.rolling(window=100).mean()
-    save_to_json(rolling_mean, 'rolling_data')
+    save_to_json(rolling_mean, 'rolling_data.json')
     return rolling_mean
 
 

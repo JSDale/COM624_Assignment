@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 # Any file in Data
-/Data
+/Stock_Data
