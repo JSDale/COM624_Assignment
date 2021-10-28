@@ -2,15 +2,14 @@ import datetime
 import pandas_datareader.data as web
 import matplotlib.pyplot as plt
 
-from StockPredicting import PandasStockPredictor as psp
 from FileManipulation import SavingToFiles
 
 
 class CompareCompetitors:
 
     __information_source = 'yahoo'
-    __start_date = datetime.datetime(2021, 9, 21)
-    __end_date = datetime.datetime(2021, 10, 1)
+    __start_date = datetime.datetime(2010, 1, 11)
+    __end_date = datetime.datetime(2021, 10, 28)
     __stock_type = 'Adj Close'
 
     def do_stuff(self, tickers):
@@ -41,6 +40,7 @@ class CompareCompetitors:
         plt.scatter(restcomp.mean(), restcomp.std())
         plt.xlabel('Expected returns')
         plt.ylabel('Risk')
+        # plt.plot([-0.006, 0.006], [0.006, 0.024])
         for label, x, y in zip(restcomp.columns, restcomp.mean(), restcomp.std()):
             plt.annotate(
                 label,

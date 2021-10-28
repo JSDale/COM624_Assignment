@@ -3,7 +3,6 @@ import sys
 from MessageBroker import ActiveConnecitons
 from MessageBroker import RabbitMqRequestReceiver
 from StockPredicting import PredictingTheMarket
-from StockPredicting import CompareCompetitors
 
 
 def main():
@@ -25,9 +24,9 @@ def prediction_testing():
     dataframe = predicting.get_stock_dataframe(ticker)
     percentages = predicting.get_percentages(dataframe)
 
-    #var = CompareCompetitors.CompareCompetitors()
-    #tickers = ['AAPL']
-    #var.do_stuff(tickers)
+    # var = CompareCompetitors.CompareCompetitors()
+    # tickers = ['LOCK.L', 'QQ.L']
+    # var.do_stuff(tickers)
 
 
 if __name__ == "__main__":

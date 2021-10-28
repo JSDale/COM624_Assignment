@@ -1,9 +1,7 @@
 import datetime
 import pandas_datareader.data as web
 import os
-from StockPredicting import PlottingOnGraph
-from StockPredicting import PlotReturnsGraph
-
+from UnderstandingData import PlotReturnsGraph, PlottingOnGraph
 
 filepath = os.getcwd()
 
