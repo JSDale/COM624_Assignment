@@ -3,6 +3,7 @@ import sys
 from MessageBroker import ActiveConnecitons
 from MessageBroker import RabbitMqRequestReceiver
 from StockPredicting import PredictingTheMarket
+from UnderstandingData import CompareCompetitors
 
 
 def main():
@@ -23,12 +24,16 @@ def prediction_testing():
     ticker = 'AAPL'
     dataframe = predicting.get_stock_dataframe(ticker)
     percentages = predicting.get_percentages(dataframe)
+    predicting.predict(percentages)
 
-    # var = CompareCompetitors.CompareCompetitors()
-    # tickers = ['LOCK.L', 'QQ.L']
-    # var.do_stuff(tickers)
+
+def risk_return_plotting():
+    var = CompareCompetitors.CompareCompetitors()
+    tickers = ['LOCK.L', 'QQ.L', 'HLMA.L']
+    var.do_stuff(tickers)
 
 
 if __name__ == "__main__":
     # main()
+    # risk_return_plotting()
     prediction_testing()

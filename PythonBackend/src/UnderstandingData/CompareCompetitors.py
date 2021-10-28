@@ -24,6 +24,7 @@ class CompareCompetitors:
                                        end=self.__end_date)[self.__stock_type]
             print('saving to file')
             # psp.save_to_json(dataframe, 'competition_stocks.json')
+            print(dataframe)
             return dataframe
         except Exception as e:
             print(f'error: {str(e)}')
