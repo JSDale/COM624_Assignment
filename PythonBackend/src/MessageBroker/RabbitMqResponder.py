@@ -6,8 +6,8 @@ from MessageBroker import ActiveConnecitons
 class RabbitMqResponder:
 
     __host = 'localhost'
-    __queue = 'StockExchange'
-    __routing_key = 'StockExchange'
+    __queue = 'resp_stock'
+    __routing_key = 'resp_stock'
     __channel = None
 
     def __init__(self):

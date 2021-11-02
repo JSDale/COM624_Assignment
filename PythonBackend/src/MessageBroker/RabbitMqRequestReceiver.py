@@ -1,5 +1,6 @@
 import pika
 from MessageBroker import ActiveConnecitons
+from MessageBroker import RabbitMqResponder
 
 
 class RabbitMqRequestReceiver:
@@ -20,3 +21,5 @@ class RabbitMqRequestReceiver:
 
     def __callback(self, ch, method, properties, message):
         print(f'received {message}')
+        rmq_resp = RabbitMqResponder.RabbitMqResponder()
+        rmq_resp.respond_with_prediction("wibble floob")

@@ -26,17 +26,18 @@ namespace MessageBroker
         /// <param name="stockInfoSource">Where the stock information is gathered</param>
         public void Send(string ticker, string stockInfoSource)
         {
-            var factory = new ConnectionFactory() { HostName = "host" };
+            var factory = new ConnectionFactory() { HostName = "localhost" };
             // ReSharper disable once ConvertToUsingDeclaration
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: "StockPredictions", durable: false, exclusive: false, autoDelete: true, arguments: null);
+                //// These settings must be the same as the ones in the back-ends
+                channel.QueueDeclare(queue: "StockExchange", durable: false, exclusive: false, autoDelete: false, arguments: null);
 
                 var message = $"GET:STOCKPREDICTIONS {ticker}, {stockInfoSource}";
                 var body = Encoding.UTF8.GetBytes(message);
 
-                channel.BasicPublish(exchange: string.Empty, routingKey: "GetPredictions", basicProperties: null, body: body);
+                channel.BasicPublish(exchange: string.Empty, routingKey: "StockExchange", basicProperties: null, body: body);
 
                 // TODO implement logger and log message sent
                // TODO second page can implement log events

@@ -3,11 +3,14 @@
 namespace Gui
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
 
     using CustomEvents;
 
     using GuiController;
+
+    using MessageBroker;
 
     /// <summary>
     /// The main form for the application
@@ -21,16 +24,43 @@ namespace Gui
         {
             this.InitializeComponent();
             this.InitEventListeners();
+            this.StartConsumer();
         }
 
+        /// <summary>
+        /// Starts subscriber for predictions
+        /// </summary>
+        private void StartConsumer()
+        {
+            var consumer = new Consumer();
+            Task.Run(() => consumer.Consume());
+        }
+
+        /// <summary>
+        /// Initializes the events to run methods when triggered.
+        /// </summary>
         private void InitEventListeners()
         {
             UpdateGui.UpdateStockEvent += this.UpdateStockPredictions;
         }
 
+        /// <summary>
+        /// Updates the GUI to display predictions
+        /// </summary>
+        /// <param name="stockPrediction">the predictions</param>
         private void UpdateStockPredictions(string stockPrediction)
         {
-            this.richTextBoxPredictions.Text = stockPrediction;
+            if (this.richTextBoxPredictions.InvokeRequired)
+            {
+                this.richTextBoxPredictions.Invoke((MethodInvoker)delegate
+                    {
+                        this.richTextBoxPredictions.Text = stockPrediction;
+                    });
+            }
+            else
+            {
+                this.richTextBoxPredictions.Text = stockPrediction;
+            }
         }
 
         /// <summary>
@@ -42,6 +72,7 @@ namespace Gui
         private void buttonPredict_Click(object sender, System.EventArgs e)
         {
             var controller = new MakePredictions(this.textBoxEnterTicker.Text, this.comboBoxInfoSource.Text);
+            controller.GetPredictions();
         }
     }
 }

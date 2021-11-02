@@ -34,6 +34,6 @@ def risk_return_plotting():
 
 
 if __name__ == "__main__":
-    # main()
+    main()
     # risk_return_plotting()
-    prediction_testing()
+    # prediction_testing()

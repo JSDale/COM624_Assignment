@@ -10,6 +10,7 @@
 
 namespace MessageBroker
 {
+    using System;
     using System.Text;
     using System.Threading.Tasks;
 
@@ -18,31 +19,43 @@ namespace MessageBroker
     using RabbitMQ.Client;
     using RabbitMQ.Client.Events;
 
+    /// <summary>
+    /// Class for consuming messages
+    /// </summary>
     public class Consumer
     {
+        /// <summary>
+        /// Consumes messages on response queue
+        /// </summary>
+        /// <returns>Task representation</returns>
         public async Task Consume()
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            // ReSharper disable once ConvertToUsingDeclaration
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
+            while (true)
             {
-                channel.QueueDeclare(
-                    queue: "resp_stock",
-                    durable: false,
-                    exclusive: false,
-                    autoDelete: false,
-                    arguments: null);
-
-                var consumer = new EventingBasicConsumer(channel);
-                consumer.Received += (model, ea) =>
+                var factory = new ConnectionFactory() { HostName = "localhost" };
+                // ReSharper disable once ConvertToUsingDeclaration
+                using (var connection = factory.CreateConnection())
+                using (var channel = connection.CreateModel())
                 {
-                    var body = ea.Body.ToArray();
-                    var message = Encoding.UTF8.GetString(body);
-                    UpdateGui.InvokeUpdateStock(message);
-                };
+                    channel.QueueDeclare(
+                        queue: "resp_stock",
+                        durable: false,
+                        exclusive: false,
+                        autoDelete: false,
+                        arguments: null);
 
-                channel.BasicConsume(queue: "resp_stock", autoAck: true, consumer: consumer);
+                    var consumer = new EventingBasicConsumer(channel);
+                    consumer.Received += (model, ea) =>
+                        {
+                            var body = ea.Body.ToArray();
+                            var message = Encoding.UTF8.GetString(body);
+                            UpdateGui.InvokeUpdateStock(message);
+                        };
+
+                    channel.BasicConsume(queue: "resp_stock", autoAck: true, consumer: consumer);
+                }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(100));
             }
         }
     }
