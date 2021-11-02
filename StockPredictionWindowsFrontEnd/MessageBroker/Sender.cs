@@ -39,7 +39,7 @@ namespace MessageBroker
                 channel.BasicPublish(exchange: string.Empty, routingKey: "GetPredictions", basicProperties: null, body: body);
 
                 // TODO implement logger and log message sent
-                // TODO second page can implement log events
+               // TODO second page can implement log events
             }
         }
     }

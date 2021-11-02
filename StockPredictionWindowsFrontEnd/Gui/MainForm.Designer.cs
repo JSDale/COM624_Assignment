@@ -31,12 +31,12 @@ namespace Gui
         {
             this.tabControlMenu = new System.Windows.Forms.TabControl();
             this.EnterStockInfoPage = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.buttonPredict = new System.Windows.Forms.Button();
-            this.listBoxInformationSource = new System.Windows.Forms.ListBox();
             this.textBoxEnterTicker = new System.Windows.Forms.TextBox();
             this.richTextBoxPredictions = new System.Windows.Forms.RichTextBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.comboBoxInfoSource = new System.Windows.Forms.ComboBox();
             this.tabControlMenu.SuspendLayout();
             this.EnterStockInfoPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -67,16 +67,6 @@ namespace Gui
             this.EnterStockInfoPage.Text = "Enter Stock To Predict";
             this.EnterStockInfoPage.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
-            // 
-            this.tabPage2.Location = new System.Drawing.Point(4, 24);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(192, 72);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
             // splitContainer1
             // 
             this.splitContainer1.Cursor = System.Windows.Forms.Cursors.VSplit;
@@ -85,8 +75,8 @@ namespace Gui
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.comboBoxInfoSource);
             this.splitContainer1.Panel1.Controls.Add(this.buttonPredict);
-            this.splitContainer1.Panel1.Controls.Add(this.listBoxInformationSource);
             this.splitContainer1.Panel1.Controls.Add(this.textBoxEnterTicker);
             // 
             // splitContainer1.Panel2
@@ -106,15 +96,6 @@ namespace Gui
             this.buttonPredict.UseVisualStyleBackColor = true;
             this.buttonPredict.Click += new System.EventHandler(this.buttonPredict_Click);
             // 
-            // listBoxInformationSource
-            // 
-            this.listBoxInformationSource.FormattingEnabled = true;
-            this.listBoxInformationSource.ItemHeight = 15;
-            this.listBoxInformationSource.Location = new System.Drawing.Point(7, 171);
-            this.listBoxInformationSource.Name = "listBoxInformationSource";
-            this.listBoxInformationSource.Size = new System.Drawing.Size(233, 34);
-            this.listBoxInformationSource.TabIndex = 4;
-            // 
             // textBoxEnterTicker
             // 
             this.textBoxEnterTicker.BackColor = System.Drawing.SystemColors.Window;
@@ -132,6 +113,24 @@ namespace Gui
             this.richTextBoxPredictions.Size = new System.Drawing.Size(504, 396);
             this.richTextBoxPredictions.TabIndex = 0;
             this.richTextBoxPredictions.Text = "";
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(767, 397);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // comboBoxInfoSource
+            // 
+            this.comboBoxInfoSource.FormattingEnabled = true;
+            this.comboBoxInfoSource.Location = new System.Drawing.Point(7, 171);
+            this.comboBoxInfoSource.Name = "comboBoxInfoSource";
+            this.comboBoxInfoSource.Size = new System.Drawing.Size(233, 23);
+            this.comboBoxInfoSource.TabIndex = 6;
             // 
             // MainForm
             // 
@@ -161,9 +160,9 @@ namespace Gui
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Button buttonPredict;
-        private System.Windows.Forms.ListBox listBoxInformationSource;
         private System.Windows.Forms.TextBox textBoxEnterTicker;
         private System.Windows.Forms.RichTextBox richTextBoxPredictions;
+        private System.Windows.Forms.ComboBox comboBoxInfoSource;
     }
 }
 

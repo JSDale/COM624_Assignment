@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gui", "Gui\Gui.csproj", "{336D52B4-8DD7-4EA2-BEDB-FF368E351C0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gui", "Gui\Gui.csproj", "{336D52B4-8DD7-4EA2-BEDB-FF368E351C0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBroker", "MessageBroker\MessageBroker.csproj", "{3BFFFB4A-6FDD-4E2F-BD25-48E3299DAE02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBroker", "MessageBroker\MessageBroker.csproj", "{3BFFFB4A-6FDD-4E2F-BD25-48E3299DAE02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuiController", "GuiController\GuiController.csproj", "{E3FF2A27-EEA2-404C-9F71-8CCF19478489}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuiController", "GuiController\GuiController.csproj", "{E3FF2A27-EEA2-404C-9F71-8CCF19478489}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuiController.Tests", "GuiController.Tests\GuiController.Tests.csproj", "{A57AA70A-AFC1-4FD6-A3C7-C427AE74BCFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuiController.Tests", "GuiController.Tests\GuiController.Tests.csproj", "{A57AA70A-AFC1-4FD6-A3C7-C427AE74BCFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomEvents", "CustomEvents\CustomEvents.csproj", "{B7A32397-1891-445D-9735-E2754AAFFABA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A57AA70A-AFC1-4FD6-A3C7-C427AE74BCFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A57AA70A-AFC1-4FD6-A3C7-C427AE74BCFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A57AA70A-AFC1-4FD6-A3C7-C427AE74BCFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7A32397-1891-445D-9735-E2754AAFFABA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7A32397-1891-445D-9735-E2754AAFFABA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7A32397-1891-445D-9735-E2754AAFFABA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7A32397-1891-445D-9735-E2754AAFFABA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
