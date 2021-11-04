@@ -4,6 +4,7 @@ from MessageBroker import ActiveConnecitons
 from MessageBroker import RabbitMqRequestReceiver
 from StockPredicting import PredictingTheMarket
 from UnderstandingData import CompareCompetitors
+from UnderstandingData import PandasStockPredictor
 
 
 def main():
@@ -21,10 +22,10 @@ def main():
 
 def prediction_testing():
     predicting = PredictingTheMarket.PredictingTheMarket()
-    ticker = 'AAPL'
+    ticker = 'QQ.L'
     dataframe = predicting.get_stock_dataframe(ticker)
-    percentages = predicting.get_percentages(dataframe)
-    predicting.predict(percentages)
+    dfreg = predicting.get_dfreg(dataframe)
+    predicting.predict(dfreg)
 
 
 def risk_return_plotting():
@@ -33,7 +34,13 @@ def risk_return_plotting():
     var.do_stuff(tickers)
 
 
+def rolling_average_plotting():
+    ticker = 'QQ.L'
+    PandasStockPredictor.render_rolling_average_to_graph(ticker)
+
+
 if __name__ == "__main__":
-    main()
+    # main()
     # risk_return_plotting()
-    # prediction_testing()
+    # rolling_average_plotting()
+    prediction_testing()

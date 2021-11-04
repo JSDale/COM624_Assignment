@@ -54,12 +54,14 @@ namespace Gui
             {
                 this.richTextBoxPredictions.Invoke((MethodInvoker)delegate
                     {
-                        this.richTextBoxPredictions.Text = stockPrediction;
+                        var predictions = $"{this.richTextBoxPredictions.Text}\nReceived: {stockPrediction}";
+                        this.richTextBoxPredictions.Text = predictions;
                     });
             }
             else
             {
-                this.richTextBoxPredictions.Text = stockPrediction;
+                var predictions = $"Received: {this.richTextBoxPredictions.Text}\n {stockPrediction}";
+                this.richTextBoxPredictions.Text = predictions;
             }
         }
 
