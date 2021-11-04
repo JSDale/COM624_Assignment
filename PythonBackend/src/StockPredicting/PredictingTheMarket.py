@@ -1,7 +1,9 @@
+import matplotlib.pyplot as plt
 import pandas_datareader.data as web
 import datetime
 import math
 import numpy as np
+import os
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -15,7 +17,7 @@ class PredictingTheMarket:
 
     __information_source = 'yahoo'
     __start_date = datetime.datetime(2010, 1, 1)
-    __end_date = datetime.datetime.now()
+    __end_date = datetime.datetime(2021, 7, 31)
     __stock_type = ['Adj Close']
 
     def get_stock_dataframe(self, ticker):
@@ -60,6 +62,8 @@ class PredictingTheMarket:
 
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
 
+        print(len(x))
+
         # Linear regression
         clfreg = LinearRegression(n_jobs=-1)
         clfreg.fit(x_train, y_train)
@@ -72,7 +76,7 @@ class PredictingTheMarket:
 
         clfknn = KNeighborsRegressor(n_neighbors=2)
         clfknn.fit(x_train, y_train)
-        
+
         # Testing
         confidencereg = clfreg.score(x_test, y_test)
         confidencepoly2 = clfpoly2.score(x_test, y_test)
@@ -84,3 +88,24 @@ class PredictingTheMarket:
         print("The quadratic regression 3 confidence is ", confidencepoly3)
         print("The knn regression confidence is ", confidenceknn)
 
+        forecast_set = clfreg.predict(x_lately)
+        dfreg['Forecast'] = np.nan
+        print(f'Forecast: {forecast_set}, Confidence: {confidencereg}, forecast out: {forecast_out}')
+
+        last_date = dfreg.iloc[-1].name
+        last_unix = last_date
+        next_unit = last_unix + datetime.timedelta(days=1)
+
+        for i in forecast_set:
+            next_date = next_unit
+            next_unit += datetime.timedelta(days=1)
+            length = len(dfreg.columns)
+            dfreg.loc[next_date] = [np.nan for _ in range(length-1)]+[i]
+
+        # dfreg['Adj Close'].plot()
+        dfreg['Forecast'].tail(500).plot()
+        plt.legend(loc=4)
+        plt.xlabel('Date')
+        plt.ylabel('Price')
+        filepath = os.getcwd()
+        plt.savefig(filepath + f'/Stock_Data/prediction_graph_lin.png')

@@ -8,8 +8,8 @@ filepath = os.getcwd()
 
 def render_rolling_average_to_graph(ticker):
     try:
-        start_date = datetime.datetime(2000, 8, 1)
-        end_date = datetime.datetime(2021, 10, 11)
+        start_date = datetime.datetime(2019, 1, 1)
+        end_date = datetime.datetime(2021, 11, 4)
         closing_stock_price = get_closing_stock_price(start_date, end_date, ticker)
         moving_average = get_moving_average(closing_stock_price)
         print('data gathered and saved to json, plotting graphs...')
