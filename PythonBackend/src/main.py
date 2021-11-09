@@ -40,7 +40,7 @@ def rolling_average_plotting():
 
 
 if __name__ == "__main__":
-    # main()
+    main()
     # risk_return_plotting()
     rolling_average_plotting()
-    prediction_testing()
+    # prediction_testing()

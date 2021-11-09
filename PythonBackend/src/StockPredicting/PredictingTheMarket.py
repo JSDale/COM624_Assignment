@@ -5,20 +5,18 @@ import math
 import numpy as np
 import os
 from sklearn import preprocessing
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.linear_model import Ridge
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import make_pipeline
+from sklearn.metrics import mean_squared_error, r2_score
+from FileManipulation import SavingToFiles
 
 
 class PredictingTheMarket:
 
     __information_source = 'yahoo'
-    __start_date = datetime.datetime(2010, 1, 1)
-    __end_date = datetime.datetime(2021, 7, 31)
+    __start_date = datetime.datetime(2019, 1, 1)
+    __end_date = datetime.datetime.now()
     __stock_type = ['Adj Close']
+    __save_to_files = SavingToFiles.SaveToFiles()
 
     def get_stock_dataframe(self, ticker):
         try:
@@ -31,7 +29,7 @@ class PredictingTheMarket:
 
     def get_dfreg(self, dataframe):
         print(dataframe)
-        dfreg = dataframe.loc[:, ['Adj Close']]
+        dfreg = dataframe.loc[:, ['Adj Close', 'Volume']]
         dfreg['HL_PCT'] = (dataframe['High'] - dataframe['Low']) / dataframe['Close'] * 100.0
         dfreg['PCT_change'] = (dataframe['Close'] - dataframe['Open']) / dataframe['Open'] * 100.0
         print(dfreg)
@@ -39,73 +37,34 @@ class PredictingTheMarket:
 
     def predict(self, dfreg):
         # drop missing values
-        dfreg.fillna(value=-99999, inplace=True)
+        dfreg[:].fillna(0, inplace=True)
+        self.__save_to_files.save_to_json(dfreg, "drfeg.json")
         print(dfreg.shape)
-        # separate to 1% of the data to forecast
-        forecast_out = int(math.ceil(0.01 * len(dfreg)))
+        amount_to_forecast = int(math.ceil(0.01 * len(dfreg)))
 
         # Separating label here, to predict the Adjusted close.
         forecast_col = 'Adj Close'
-        dfreg['label'] = dfreg[forecast_col].shift(-forecast_out)
+        dfreg['label'] = dfreg[forecast_col].shift(-amount_to_forecast)
+
         x = np.array(dfreg.drop(['label'], 1))
-
         x = preprocessing.scale(x)
-
-        x_lately = x[-forecast_out:]
-        x = x[:-forecast_out]
+        x_train = x[:-amount_to_forecast]
+        x_test = x[-amount_to_forecast:]
 
         y = np.array(dfreg['label'])
-        y = y[:-forecast_out]
+        y_train = y[:-amount_to_forecast]
+        y_test = y[-amount_to_forecast:]
 
-        print(f'dimension of x: {x.shape}')
-        print(f'dimension of y: {y.shape}')
+        regr = LinearRegression()
+        regr.fit(x_train, y_train)
 
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+        y_prediction = regr.predict(x_test)
 
-        print(len(x))
+        # The coefficients
+        print("Coefficients: \n", regr.coef_)
+        # The mean squared error
+        print("Mean squared error: %.2f" % mean_squared_error(y_test, y_prediction))
+        # The coefficient of determination: 1 is perfect prediction
+        print("Coefficient of determination: %.2f" % r2_score(y_test, y_prediction))
 
-        # Linear regression
-        clfreg = LinearRegression(n_jobs=-1)
-        clfreg.fit(x_train, y_train)
 
-        clfpoly2 = make_pipeline(PolynomialFeatures(2), Ridge())
-        clfpoly2.fit(x_train, y_train)
-
-        clfpoly3 = make_pipeline(PolynomialFeatures(3), Ridge())
-        clfpoly3.fit(x_train, y_train)
-
-        clfknn = KNeighborsRegressor(n_neighbors=2)
-        clfknn.fit(x_train, y_train)
-
-        # Testing
-        confidencereg = clfreg.score(x_test, y_test)
-        confidencepoly2 = clfpoly2.score(x_test, y_test)
-        confidencepoly3 = clfpoly3.score(x_test, y_test)
-        confidenceknn = clfknn.score(x_test, y_test)
-
-        print("The linear regression confidence is ", confidencereg)
-        print("The quadratic regression 2 confidence is ", confidencepoly2)
-        print("The quadratic regression 3 confidence is ", confidencepoly3)
-        print("The knn regression confidence is ", confidenceknn)
-
-        forecast_set = clfreg.predict(x_lately)
-        dfreg['Forecast'] = np.nan
-        print(f'Forecast: {forecast_set}, Confidence: {confidencereg}, forecast out: {forecast_out}')
-
-        last_date = dfreg.iloc[-1].name
-        last_unix = last_date
-        next_unit = last_unix + datetime.timedelta(days=1)
-
-        for i in forecast_set:
-            next_date = next_unit
-            next_unit += datetime.timedelta(days=1)
-            length = len(dfreg.columns)
-            dfreg.loc[next_date] = [np.nan for _ in range(length-1)]+[i]
-
-        # dfreg['Adj Close'].plot()
-        dfreg['Forecast'].tail(500).plot()
-        plt.legend(loc=4)
-        plt.xlabel('Date')
-        plt.ylabel('Price')
-        filepath = os.getcwd()
-        plt.savefig(filepath + f'/Stock_Data/prediction_graph_lin.png')

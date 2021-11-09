@@ -38,7 +38,7 @@ def save_to_json(raw_dataframe, filename):
 
 
 def get_moving_average(closing_stock_price):
-    rolling_mean = closing_stock_price.rolling(window=100).mean()
+    rolling_mean = closing_stock_price.rolling(window=10).mean()
     save_to_json(rolling_mean, 'rolling_data.json')
     return rolling_mean
 
