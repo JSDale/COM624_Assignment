@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy
 import pandas_datareader.data as web
 import datetime
 import math
@@ -52,6 +53,8 @@ class PredictingTheMarket:
         x_test = x[-amount_to_forecast:]
 
         y = np.array(dfreg['label'])
+        y = preprocessing.scale(y)
+        y = numpy.nan_to_num(y, nan=0, copy=False)
         y_train = y[:-amount_to_forecast]
         y_test = y[-amount_to_forecast:]
 

@@ -27,11 +27,8 @@ namespace MessageBroker
         /// <summary>
         /// Consumes messages on response queue
         /// </summary>
-        /// <returns>Task representation</returns>
-        public async Task Consume()
+        public async void Consume()
         {
-            while (true)
-            {
                 var factory = new ConnectionFactory() { HostName = "localhost" };
                 // ReSharper disable once ConvertToUsingDeclaration
                 using (var connection = factory.CreateConnection())
@@ -46,18 +43,19 @@ namespace MessageBroker
 
                     var consumer = new EventingBasicConsumer(channel);
                     consumer.Received += (model, ea) =>
-                        {
-                            var body = ea.Body.ToArray();
-                            var wibble = ea.RoutingKey;
-                            var message = Encoding.UTF8.GetString(body);
-                            UpdateGui.InvokeUpdateStock(message);
-                        };
+                    {
+                        var body = ea.Body.ToArray();
+                        var wibble = ea.RoutingKey;
+                        var message = Encoding.UTF8.GetString(body);
+                        UpdateGui.InvokeUpdateStock(message);
+                    };
 
-                    channel.BasicConsume(queue: "resp_stock", autoAck: true, consumer: consumer);
+                    while (true)
+                    {
+                        channel.BasicConsume(queue: "resp_stock", autoAck: true, consumer: consumer);
+                        await Task.Delay(TimeSpan.FromMilliseconds(20));
+                    }
                 }
-
-                await Task.Delay(TimeSpan.FromMilliseconds(20));
-            }
         }
     }
 }
