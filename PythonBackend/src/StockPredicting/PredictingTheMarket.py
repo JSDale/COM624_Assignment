@@ -1,13 +1,10 @@
 import matplotlib.pyplot as plt
-import numpy
 import pandas_datareader.data as web
 import datetime
-import math
 import numpy as np
-import os
-from sklearn import preprocessing
-from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn import datasets, linear_model
+
 from FileManipulation import SavingToFiles
 
 
@@ -31,8 +28,6 @@ class PredictingTheMarket:
     def get_dfreg(self, dataframe):
         print(dataframe)
         dfreg = dataframe.loc[:, ['Adj Close', 'Volume']]
-        dfreg['HL_PCT'] = (dataframe['High'] - dataframe['Low']) / dataframe['Close'] * 100.0
-        dfreg['PCT_change'] = (dataframe['Close'] - dataframe['Open']) / dataframe['Open'] * 100.0
         print(dfreg)
         return dfreg
 
@@ -41,33 +36,41 @@ class PredictingTheMarket:
         dfreg[:].fillna(0, inplace=True)
         self.__save_to_files.save_to_json(dfreg, "drfeg.json")
         print(dfreg.shape)
-        amount_to_forecast = int(math.ceil(0.01 * len(dfreg)))
+        dfreg['label'] = dfreg['Adj Close']
 
-        # Separating label here, to predict the Adjusted close.
-        forecast_col = 'Adj Close'
-        dfreg['label'] = dfreg[forecast_col].shift(-amount_to_forecast)
+        X = np.array(dfreg.drop(['label'], 1))
+        print(X)
 
-        x = np.array(dfreg.drop(['label'], 1))
-        x = preprocessing.scale(x)
-        x_train = x[:-amount_to_forecast]
-        x_test = x[-amount_to_forecast:]
+        Y = dfreg.keys()
 
-        y = np.array(dfreg['label'])
-        y = preprocessing.scale(y)
-        y = numpy.nan_to_num(y, nan=0, copy=False)
-        y_train = y[:-amount_to_forecast]
-        y_test = y[-amount_to_forecast:]
+        # Split the data into training/testing sets
+        X_train = X[:-20]
+        X_test = X[-20:]
 
-        regr = LinearRegression()
-        regr.fit(x_train, y_train)
+        # Split the targets into training/testing sets
+        Y_train = Y[:-20]
+        Y_test = Y[-20:]
 
-        y_prediction = regr.predict(x_test)
+        # Create linear regression object
+        regr = linear_model.LinearRegression()
+
+        # Train the model using the training sets
+        regr.fit(X_train, Y_train)
+
+        # Make predictions using the testing set
+        Y_pred = regr.predict(X_test)
 
         # The coefficients
         print("Coefficients: \n", regr.coef_)
         # The mean squared error
-        print("Mean squared error: %.2f" % mean_squared_error(y_test, y_prediction))
+        print("Mean squared error: %.2f" % mean_squared_error(Y_test, Y_pred))
         # The coefficient of determination: 1 is perfect prediction
-        print("Coefficient of determination: %.2f" % r2_score(y_test, y_prediction))
+        print("Coefficient of determination: %.2f" % r2_score(Y_test, Y_pred))
 
+        # Plot outputs
+        plt.scatter(X_test[:, 0], Y_test, color="black")
+        plt.plot(X_test, Y_pred, color="blue", linewidth=3)
 
+        plt.xticks(())
+        plt.yticks(())
+        self.__save_to_files.save_graph_as_png('Linear_testing2.png')
