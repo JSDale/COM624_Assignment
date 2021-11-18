@@ -31,67 +31,88 @@ namespace Gui
         {
             this.tabControlMenu = new System.Windows.Forms.TabControl();
             this.EnterStockInfoPage = new System.Windows.Forms.TabPage();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.richTextBoxPredictions = new System.Windows.Forms.RichTextBox();
+            this.comboBoxInfoSource = new System.Windows.Forms.ComboBox();
             this.buttonPredict = new System.Windows.Forms.Button();
             this.textBoxEnterTicker = new System.Windows.Forms.TextBox();
-            this.richTextBoxPredictions = new System.Windows.Forms.RichTextBox();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.comboBoxInfoSource = new System.Windows.Forms.ComboBox();
+            this.tabPageGraph = new System.Windows.Forms.TabPage();
+            this.pictureBoxGraph = new System.Windows.Forms.PictureBox();
             this.tabControlMenu.SuspendLayout();
             this.EnterStockInfoPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.tabPageGraph.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGraph)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControlMenu
             // 
+            this.tabControlMenu.Alignment = System.Windows.Forms.TabAlignment.Bottom;
+            this.tabControlMenu.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControlMenu.Controls.Add(this.EnterStockInfoPage);
-            this.tabControlMenu.Controls.Add(this.tabPage2);
-            this.tabControlMenu.Location = new System.Drawing.Point(13, 13);
+            this.tabControlMenu.Controls.Add(this.tabPageGraph);
+            this.tabControlMenu.Location = new System.Drawing.Point(0, 0);
+            this.tabControlMenu.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tabControlMenu.Name = "tabControlMenu";
             this.tabControlMenu.SelectedIndex = 0;
-            this.tabControlMenu.Size = new System.Drawing.Size(775, 425);
+            this.tabControlMenu.Size = new System.Drawing.Size(968, 600);
             this.tabControlMenu.TabIndex = 0;
             // 
             // EnterStockInfoPage
             // 
             this.EnterStockInfoPage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.EnterStockInfoPage.Controls.Add(this.splitContainer1);
-            this.EnterStockInfoPage.Location = new System.Drawing.Point(4, 24);
+            this.EnterStockInfoPage.Controls.Add(this.panel1);
+            this.EnterStockInfoPage.Location = new System.Drawing.Point(4, 4);
+            this.EnterStockInfoPage.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.EnterStockInfoPage.Name = "EnterStockInfoPage";
-            this.EnterStockInfoPage.Padding = new System.Windows.Forms.Padding(3);
-            this.EnterStockInfoPage.Size = new System.Drawing.Size(767, 397);
+            this.EnterStockInfoPage.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.EnterStockInfoPage.Size = new System.Drawing.Size(960, 567);
             this.EnterStockInfoPage.TabIndex = 0;
             this.EnterStockInfoPage.Text = "Enter Stock To Predict";
             this.EnterStockInfoPage.UseVisualStyleBackColor = true;
             // 
-            // splitContainer1
+            // panel1
             // 
-            this.splitContainer1.Cursor = System.Windows.Forms.Cursors.VSplit;
-            this.splitContainer1.Location = new System.Drawing.Point(-1, -1);
-            this.splitContainer1.Name = "splitContainer1";
+            this.panel1.Controls.Add(this.richTextBoxPredictions);
+            this.panel1.Controls.Add(this.comboBoxInfoSource);
+            this.panel1.Controls.Add(this.buttonPredict);
+            this.panel1.Controls.Add(this.textBoxEnterTicker);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(3, 4);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(952, 557);
+            this.panel1.TabIndex = 0;
             // 
-            // splitContainer1.Panel1
+            // richTextBoxPredictions
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.comboBoxInfoSource);
-            this.splitContainer1.Panel1.Controls.Add(this.buttonPredict);
-            this.splitContainer1.Panel1.Controls.Add(this.textBoxEnterTicker);
+            this.richTextBoxPredictions.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBoxPredictions.Location = new System.Drawing.Point(365, 0);
+            this.richTextBoxPredictions.Name = "richTextBoxPredictions";
+            this.richTextBoxPredictions.ReadOnly = true;
+            this.richTextBoxPredictions.Size = new System.Drawing.Size(587, 557);
+            this.richTextBoxPredictions.TabIndex = 10;
+            this.richTextBoxPredictions.Text = "";
             // 
-            // splitContainer1.Panel2
+            // comboBoxInfoSource
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.richTextBoxPredictions);
-            this.splitContainer1.Size = new System.Drawing.Size(767, 397);
-            this.splitContainer1.SplitterDistance = 255;
-            this.splitContainer1.TabIndex = 0;
+            this.comboBoxInfoSource.FormattingEnabled = true;
+            this.comboBoxInfoSource.Location = new System.Drawing.Point(42, 240);
+            this.comboBoxInfoSource.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.comboBoxInfoSource.Name = "comboBoxInfoSource";
+            this.comboBoxInfoSource.Size = new System.Drawing.Size(266, 28);
+            this.comboBoxInfoSource.TabIndex = 9;
             // 
             // buttonPredict
             // 
-            this.buttonPredict.Location = new System.Drawing.Point(63, 211);
+            this.buttonPredict.Location = new System.Drawing.Point(106, 293);
+            this.buttonPredict.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonPredict.Name = "buttonPredict";
-            this.buttonPredict.Size = new System.Drawing.Size(115, 38);
-            this.buttonPredict.TabIndex = 5;
+            this.buttonPredict.Size = new System.Drawing.Size(131, 51);
+            this.buttonPredict.TabIndex = 8;
             this.buttonPredict.Text = "Predict";
             this.buttonPredict.UseVisualStyleBackColor = true;
             this.buttonPredict.Click += new System.EventHandler(this.buttonPredict_Click);
@@ -99,56 +120,53 @@ namespace Gui
             // textBoxEnterTicker
             // 
             this.textBoxEnterTicker.BackColor = System.Drawing.SystemColors.Window;
-            this.textBoxEnterTicker.Location = new System.Drawing.Point(7, 142);
+            this.textBoxEnterTicker.Location = new System.Drawing.Point(42, 201);
+            this.textBoxEnterTicker.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.textBoxEnterTicker.Name = "textBoxEnterTicker";
-            this.textBoxEnterTicker.Size = new System.Drawing.Size(233, 23);
-            this.textBoxEnterTicker.TabIndex = 3;
+            this.textBoxEnterTicker.Size = new System.Drawing.Size(266, 27);
+            this.textBoxEnterTicker.TabIndex = 7;
             this.textBoxEnterTicker.Text = "Enter Stock Ticker";
             // 
-            // richTextBoxPredictions
+            // tabPageGraph
             // 
-            this.richTextBoxPredictions.Location = new System.Drawing.Point(3, 0);
-            this.richTextBoxPredictions.Name = "richTextBoxPredictions";
-            this.richTextBoxPredictions.ReadOnly = true;
-            this.richTextBoxPredictions.Size = new System.Drawing.Size(504, 396);
-            this.richTextBoxPredictions.TabIndex = 0;
-            this.richTextBoxPredictions.Text = "";
+            this.tabPageGraph.Controls.Add(this.pictureBoxGraph);
+            this.tabPageGraph.Location = new System.Drawing.Point(4, 4);
+            this.tabPageGraph.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tabPageGraph.Name = "tabPageGraph";
+            this.tabPageGraph.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tabPageGraph.Size = new System.Drawing.Size(960, 567);
+            this.tabPageGraph.TabIndex = 1;
+            this.tabPageGraph.Text = "Prediction Graph";
+            this.tabPageGraph.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // pictureBoxGraph
             // 
-            this.tabPage2.Location = new System.Drawing.Point(4, 24);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(767, 397);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // comboBoxInfoSource
-            // 
-            this.comboBoxInfoSource.FormattingEnabled = true;
-            this.comboBoxInfoSource.Location = new System.Drawing.Point(7, 171);
-            this.comboBoxInfoSource.Name = "comboBoxInfoSource";
-            this.comboBoxInfoSource.Size = new System.Drawing.Size(233, 23);
-            this.comboBoxInfoSource.TabIndex = 6;
+            this.pictureBoxGraph.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBoxGraph.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBoxGraph.Location = new System.Drawing.Point(3, 4);
+            this.pictureBoxGraph.Name = "pictureBoxGraph";
+            this.pictureBoxGraph.Size = new System.Drawing.Size(954, 559);
+            this.pictureBoxGraph.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxGraph.TabIndex = 0;
+            this.pictureBoxGraph.TabStop = false;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(967, 600);
             this.Controls.Add(this.tabControlMenu);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.MinimumSize = new System.Drawing.Size(932, 647);
             this.Name = "MainForm";
             this.Text = "Stock Preditcting";
             this.tabControlMenu.ResumeLayout(false);
             this.EnterStockInfoPage.ResumeLayout(false);
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.tabPageGraph.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGraph)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -157,12 +175,13 @@ namespace Gui
 
         private System.Windows.Forms.TabControl tabControlMenu;
         private System.Windows.Forms.TabPage EnterStockInfoPage;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.Button buttonPredict;
-        private System.Windows.Forms.TextBox textBoxEnterTicker;
+        private System.Windows.Forms.TabPage tabPageGraph;
+        private System.Windows.Forms.PictureBox pictureBoxGraph;
+        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.RichTextBox richTextBoxPredictions;
         private System.Windows.Forms.ComboBox comboBoxInfoSource;
+        private System.Windows.Forms.Button buttonPredict;
+        private System.Windows.Forms.TextBox textBoxEnterTicker;
     }
 }
 

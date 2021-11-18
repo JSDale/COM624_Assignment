@@ -32,7 +32,10 @@ namespace Gui
         /// </summary>
         private void StartConsumer()
         {
-            var consumer = new Consumer();
+            const string HostName = "localhost";
+            const string Queue = "resp_stock";
+            var consumer = new Consumer(HostName, Queue);
+            consumer.Initialize();
             Task.Run(() => consumer.Consume());
         }
 
@@ -42,6 +45,8 @@ namespace Gui
         private void InitEventListeners()
         {
             UpdateGui.UpdateStockEvent += this.UpdateStockPredictions;
+            UpdateGui.UpdateStockEvent += this.UpdateGraph;
+
         }
 
         /// <summary>
@@ -53,15 +58,33 @@ namespace Gui
             if (this.richTextBoxPredictions.InvokeRequired)
             {
                 this.richTextBoxPredictions.Invoke((MethodInvoker)delegate
-                    {
-                        var predictions = $"{this.richTextBoxPredictions.Text}\nReceived: {stockPrediction}";
-                        this.richTextBoxPredictions.Text = predictions;
-                    });
+                {
+                    var predictions = $"{this.richTextBoxPredictions.Text}\nReceived: {stockPrediction}";
+                    this.richTextBoxPredictions.Text = predictions;
+                });
             }
             else
             {
                 var predictions = $"Received: {this.richTextBoxPredictions.Text}\n {stockPrediction}";
                 this.richTextBoxPredictions.Text = predictions;
+            }
+        }
+
+        /// <summary>
+        /// updates the picture box with generated graph of predictions
+        /// </summary>
+        /// <param name="location">the file path of the graph</param>
+        private void UpdateGraph(string location)
+        {
+            if (this.pictureBoxGraph.InvokeRequired)
+            {
+                this.pictureBoxGraph.ImageLocation = location;
+                this.pictureBoxGraph.SizeMode = PictureBoxSizeMode.StretchImage;
+            }
+            else
+            {
+                this.pictureBoxGraph.ImageLocation = location;
+                this.pictureBoxGraph.SizeMode = PictureBoxSizeMode.StretchImage;
             }
         }
 

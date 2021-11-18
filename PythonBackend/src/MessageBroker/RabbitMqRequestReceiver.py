@@ -22,4 +22,5 @@ class RabbitMqRequestReceiver:
     def __callback(self, ch, method, properties, message):
         print(f'received {message}')
         rmq_resp = RabbitMqResponder.RabbitMqResponder()
-        rmq_resp.respond_with_prediction("wibble floob")
+        location = "C:\\Dev\\University\\COM624_Assignment\\PythonBackend\\Stock_Data\\rolling_graph_AAPL.png"
+        rmq_resp.respond_with_prediction(location)
