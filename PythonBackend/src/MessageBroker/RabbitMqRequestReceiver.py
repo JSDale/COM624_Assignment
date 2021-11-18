@@ -1,6 +1,7 @@
 import pika
 
 import MessageBroker.StockMessageDao
+import main
 from MessageBroker import ActiveConnecitons
 from MessageBroker import RabbitMqResponder
 
@@ -23,9 +24,4 @@ class RabbitMqRequestReceiver:
 
     def __callback(self, ch, method, properties, message):
         print(f'received {message}')
-        rmq_resp = RabbitMqResponder.RabbitMqResponder()
-        predictions = ['test', 'wibble', 'floob']
-        location = "C:\\Dev\\University\\COM624_Assignment\\PythonBackend\\Stock_Data\\rolling_graph_AAPL.png"
-        stock_message = MessageBroker.StockMessageDao.StockMessageDao(location, predictions)
-        json = stock_message.toJSON()
-        rmq_resp.respond_with_prediction(json)
+        main.prediction_testing()

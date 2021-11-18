@@ -13,13 +13,14 @@ from sklearn.linear_model import Ridge
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 from FileManipulation import SavingToFiles
+from MessageBroker import RabbitMqResponder, StockMessageDao
 
 
 class PredictingTheMarket:
 
     __information_source = 'yahoo'
-    __start_date = datetime.datetime(2019, 1, 1)
-    __end_date = datetime.datetime(2021, 10, 30)
+    __start_date = datetime.datetime(2020, 1, 1)
+    __end_date = datetime.datetime.now()
     __stock_type = ['Adj Close']
     __save_to_files = SavingToFiles.SaveToFiles()
 
@@ -43,8 +44,8 @@ class PredictingTheMarket:
         dfreg.fillna(value=-99999, inplace=True)
 
         print(dfreg.shape)
-        # We want to separate 10 percent of the data to forecast
-        forecast_out = int(math.ceil(0.1 * len(dfreg)))
+        # We want to separate 0.08 percent of the data to forecast
+        forecast_out = int(math.ceil(0.01 * len(dfreg)))
 
         # Separating the label here, we want to predict the AdjClose
         forecast_col = 'Adj Close'
@@ -112,5 +113,19 @@ class PredictingTheMarket:
         plt.legend(loc=4)
         plt.xlabel('Date')
         plt.ylabel('Price')
+        title = 'poly2_test_new'
+        plt.title(title)
         filepath = os.getcwd()
-        plt.savefig(f'{filepath}/Stock_Data/poly2_test_new.png')
+        file_location = f'{filepath}\\Stock_Data\\{title}.png'
+        plt.savefig(file_location)
+
+        predictions = [f'confidence of linear reg: {confidencereg}',
+                       f'confidence of polynomial2: {confidencepoly2}',
+                       f'confidence of polynomial3: {confidencepoly3}',
+                       f'confidence of KNN: {confidenceknn}']
+        location = file_location
+        stock_message = StockMessageDao.StockMessageDao(location, predictions)
+        json = stock_message.toJSON()
+
+        rmq_resp = RabbitMqResponder.RabbitMqResponder()
+        rmq_resp.respond_with_prediction(json)

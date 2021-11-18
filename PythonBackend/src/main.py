@@ -22,7 +22,7 @@ def main():
 
 def prediction_testing():
     predicting = PredictingTheMarket.PredictingTheMarket()
-    ticker = 'AAPL'
+    ticker = 'QQ.L'
     dataframe = predicting.get_stock_dataframe(ticker)
     dfreg = predicting.get_dfreg(dataframe)
     predicting.predict(dfreg)
@@ -40,7 +40,7 @@ def rolling_average_plotting():
 
 
 if __name__ == "__main__":
-    # main()
+    main()
     # risk_return_plotting()
     # rolling_average_plotting()
-    prediction_testing()
+    # prediction_testing()
