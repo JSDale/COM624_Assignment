@@ -2,11 +2,12 @@
 
 namespace Gui
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Configuration;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using System.Windows.Forms;
-
-    using CustomEvents;
 
     using GuiController;
 
@@ -44,29 +45,49 @@ namespace Gui
         /// </summary>
         private void InitEventListeners()
         {
-            UpdateGui.UpdateStockEvent += this.UpdateStockPredictions;
-            UpdateGui.UpdateStockEvent += this.UpdateGraph;
+            CustomEvents.UpdateGui.UpdateStockEvent += this.UpdateGui;
+        }
 
+        /// <summary>
+        /// Updates GUI with new predictions.
+        /// </summary>
+        /// <param name="message">the returned message from backend.</param>
+        private void UpdateGui(string message)
+        {
+            var stockMessage = JsonHandler.DeserializeStockMessage(message);
+            this.UpdateStockPredictions(stockMessage.Predictions);
+            this.UpdateGraph(stockMessage.GraphLocation);
         }
 
         /// <summary>
         /// Updates the GUI to display predictions
         /// </summary>
         /// <param name="stockPrediction">the predictions</param>
-        private void UpdateStockPredictions(string stockPrediction)
+        private void UpdateStockPredictions(List<string> stockPrediction)
         {
             if (this.richTextBoxPredictions.InvokeRequired)
             {
                 this.richTextBoxPredictions.Invoke((MethodInvoker)delegate
                 {
-                    var predictions = $"{this.richTextBoxPredictions.Text}\nReceived: {stockPrediction}";
-                    this.richTextBoxPredictions.Text = predictions;
+                    var timeOfMessage = DateTime.Now.ToString("HH:mm:ss.fff");
+                    this.richTextBoxPredictions.Text += $"Received at: {timeOfMessage}\n";
+
+                    foreach (var prediction in stockPrediction)
+                    {
+                        var message = $"{prediction}\n";
+                        this.richTextBoxPredictions.Text += message;
+                    }
                 });
             }
             else
             {
-                var predictions = $"Received: {this.richTextBoxPredictions.Text}\n {stockPrediction}";
-                this.richTextBoxPredictions.Text = predictions;
+                this.richTextBoxPredictions.Text += DateTime.Now.ToString("mm:ss.fff");
+
+                foreach (var prediction in stockPrediction)
+                {
+                    var message = $"{prediction}\n";
+                    this.richTextBoxPredictions.Text += message;
+                }
             }
         }
 

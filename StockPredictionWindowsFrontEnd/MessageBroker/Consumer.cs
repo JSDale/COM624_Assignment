@@ -63,7 +63,7 @@ namespace MessageBroker
         /// <summary>
         /// Consumes messages on given queue
         /// </summary>
-        public async void Consume()
+        public void Consume()
         {
             if (this.consumer == null)
             {
@@ -71,7 +71,6 @@ namespace MessageBroker
             }
 
             this.channel.BasicConsume(queue: this.queueName, autoAck: true, consumer: this.consumer);
-            await Task.Delay(TimeSpan.FromMilliseconds(20));
         }
 
         /// <summary>
