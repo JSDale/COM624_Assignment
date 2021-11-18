@@ -22,7 +22,7 @@ def main():
 
 def prediction_testing():
     predicting = PredictingTheMarket.PredictingTheMarket()
-    ticker = 'QQ.L'
+    ticker = 'AAPL'
     dataframe = predicting.get_stock_dataframe(ticker)
     dfreg = predicting.get_dfreg(dataframe)
     predicting.predict(dfreg)

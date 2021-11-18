@@ -19,7 +19,7 @@ class PredictingTheMarket:
 
     __information_source = 'yahoo'
     __start_date = datetime.datetime(2019, 1, 1)
-    __end_date = datetime.datetime.now()
+    __end_date = datetime.datetime(2021, 10, 30)
     __stock_type = ['Adj Close']
     __save_to_files = SavingToFiles.SaveToFiles()
 
@@ -43,8 +43,8 @@ class PredictingTheMarket:
         dfreg.fillna(value=-99999, inplace=True)
 
         print(dfreg.shape)
-        # We want to separate 1 percent of the data to forecast
-        forecast_out = int(math.ceil(0.01 * len(dfreg)))
+        # We want to separate 10 percent of the data to forecast
+        forecast_out = int(math.ceil(0.1 * len(dfreg)))
 
         # Separating the label here, we want to predict the AdjClose
         forecast_col = 'Adj Close'
@@ -98,9 +98,9 @@ class PredictingTheMarket:
         next_unix = last_unix + datetime.timedelta(days=1)
 
         # Printing the forecast
-        forecast_set = clfreg.predict(X_lately)
+        forecast_set = clfpoly2.predict(X_lately)
         dfreg['Forecast'] = np.nan
-        print(forecast_set, confidencereg, forecast_out)
+        print(forecast_set, confidencepoly2, forecast_out)
 
         for i in forecast_set:
             next_date = next_unix
@@ -113,4 +113,4 @@ class PredictingTheMarket:
         plt.xlabel('Date')
         plt.ylabel('Price')
         filepath = os.getcwd()
-        plt.savefig(f'{filepath}/Stock_Data/reg_test.png')
+        plt.savefig(f'{filepath}/Stock_Data/poly2_test_new.png')
