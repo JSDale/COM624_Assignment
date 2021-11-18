@@ -1,13 +1,18 @@
+import math
 import os
 
-import matplotlib.pyplot as plt
 import pandas_datareader.data as web
 import datetime
 import numpy as np
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn import datasets, linear_model
+import matplotlib.pyplot as plt
 
-from FileManipulation import SavingToFiles, LoadingJson
+from sklearn import preprocessing, model_selection
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.linear_model import Ridge
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.pipeline import make_pipeline
+from FileManipulation import SavingToFiles
 
 
 class PredictingTheMarket:
@@ -34,54 +39,78 @@ class PredictingTheMarket:
         return dfreg
 
     def predict(self, dfreg):
-        # drop missing values
-        dfreg[:].fillna(0, inplace=True)
-        self.__save_to_files.save_to_json(dfreg, "dfreg.json")
+        # Drop missing value
+        dfreg.fillna(value=-99999, inplace=True)
+
         print(dfreg.shape)
-        dfreg['label'] = dfreg['Adj Close']
+        # We want to separate 1 percent of the data to forecast
+        forecast_out = int(math.ceil(0.01 * len(dfreg)))
 
-        Y = np.array(dfreg.drop(['label'], 1))
-        print(Y)
+        # Separating the label here, we want to predict the AdjClose
+        forecast_col = 'Adj Close'
+        dfreg['label'] = dfreg[forecast_col].shift(-forecast_out)
+        X = np.array(dfreg.drop(['label'], 1))
 
+        # Scale the X so that everyone can have the same distribution for linear regression
+        X = preprocessing.scale(X)
+
+        # Finally We want to find Data Series of late X and early X (train) for model generation and evaluation
+        X_lately = X[-forecast_out:]
+        X = X[:-forecast_out]
+
+        # Separate label and identify it as y
+        y = np.array(dfreg['label'])
+        y = y[:-forecast_out]
+
+        print('Dimension of X', X.shape)
+        print('Dimension of y', y.shape)
+
+        X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.2)
+
+        # Linear regression
+        clfreg = LinearRegression(n_jobs=-1)
+        clfreg.fit(X_train, y_train)
+
+        # Quadratic Regression 2
+        clfpoly2 = make_pipeline(PolynomialFeatures(2), Ridge())
+        clfpoly2.fit(X_train, y_train)
+
+        # Quadratic Regression 3
+        clfpoly3 = make_pipeline(PolynomialFeatures(3), Ridge())
+        clfpoly3.fit(X_train, y_train)
+
+        # KNN Regression
+        clfknn = KNeighborsRegressor(n_neighbors=2)
+        clfknn.fit(X_train, y_train)
+
+        confidencereg = clfreg.score(X_test, y_test)
+        confidencepoly2 = clfpoly2.score(X_test, y_test)
+        confidencepoly3 = clfpoly3.score(X_test, y_test)
+        confidenceknn = clfknn.score(X_test, y_test)
+
+        print("The linear regression confidence is ", confidencereg)
+        print("The quadratic regression 2 confidence is ", confidencepoly2)
+        print("The quadratic regression 3 confidence is ", confidencepoly3)
+        print("The knn regression confidence is ", confidenceknn)
+
+        last_date = dfreg.iloc[-1].name
+        last_unix = last_date
+        next_unix = last_unix + datetime.timedelta(days=1)
+
+        # Printing the forecast
+        forecast_set = clfreg.predict(X_lately)
+        dfreg['Forecast'] = np.nan
+        print(forecast_set, confidencereg, forecast_out)
+
+        for i in forecast_set:
+            next_date = next_unix
+            next_unix += datetime.timedelta(days=1)
+            dfreg.loc[next_date] = [np.nan for _ in range(len(dfreg.columns) - 1)] + [i]
+
+        dfreg['Adj Close'].tail(500).plot()
+        dfreg['Forecast'].tail(500).plot()
+        plt.legend(loc=4)
+        plt.xlabel('Date')
+        plt.ylabel('Price')
         filepath = os.getcwd()
-        X = LoadingJson.load_dictionary_from_json(f'{filepath}/Stock_Data/dfreg')
-        times = []
-        skip = False
-        for key, value in X.items():
-            if skip is False:
-                times.append(int(key))
-                skip = True
-            else:
-                skip = False
-
-        # Split the data into training/testing sets
-        times_train = times[:-20]
-        times_test = times[-20:]
-
-        # Split the targets into training/testing sets
-        Y_train = Y[:-20]
-        Y_test = Y[-20:]
-
-        # Create linear regression object
-        regr = linear_model.LinearRegression()
-
-        # Train the model using the training sets
-        regr.fit(times_train[:, 0], Y_train)
-
-        # Make predictions using the testing set
-        Y_pred = regr.predict(times_test)
-
-        # The coefficients
-        print("Coefficients: \n", regr.coef_)
-        # The mean squared error
-        print("Mean squared error: %.2f" % mean_squared_error(Y_test, Y_pred))
-        # The coefficient of determination: 1 is perfect prediction
-        print("Coefficient of determination: %.2f" % r2_score(Y_test, Y_pred))
-
-        # Plot outputs
-        plt.scatter(times_test[:, 0], Y_test, color="black")
-        plt.plot(times_test, Y_pred, color="blue", linewidth=3)
-
-        plt.xticks(())
-        plt.yticks(())
-        self.__save_to_files.save_graph_as_png('Linear_testing2.png')
+        plt.savefig(f'{filepath}/Stock_Data/reg_test.png')
