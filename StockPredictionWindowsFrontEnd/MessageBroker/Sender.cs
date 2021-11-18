@@ -34,13 +34,11 @@ namespace MessageBroker
                 //// These settings must be the same as the ones in the back-ends
                 channel.QueueDeclare(queue: "StockExchange", durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-                var message = $"GET:STOCKPREDICTIONS {ticker}, {stockInfoSource}";
+                var message = JsonSerializer.SerializeMessageToSend(new MessageToSend(ticker, stockInfoSource));
                 var body = Encoding.UTF8.GetBytes(message);
 
                 channel.BasicPublish(exchange: string.Empty, routingKey: "StockExchange", basicProperties: null, body: body);
-
-                // TODO implement logger and log message sent
-               // TODO second page can implement log events
+                
             }
         }
     }

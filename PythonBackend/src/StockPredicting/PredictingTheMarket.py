@@ -24,11 +24,10 @@ class PredictingTheMarket:
     __stock_type = ['Adj Close']
     __save_to_files = SavingToFiles.SaveToFiles()
 
-    def get_stock_dataframe(self, ticker):
+    def get_stock_dataframe(self, ticker, source):
         try:
             print('getting data...')
-            dataframe = web.DataReader(ticker, self.__information_source, start=self.__start_date,
-                                       end=self.__end_date)
+            dataframe = web.DataReader(ticker, source, start=self.__start_date, end=self.__end_date)
             return dataframe
         except Exception as e:
             print(f'error: {str(e)}')
@@ -44,8 +43,8 @@ class PredictingTheMarket:
         dfreg.fillna(value=-99999, inplace=True)
 
         print(dfreg.shape)
-        # We want to separate 0.08 percent of the data to forecast
-        forecast_out = int(math.ceil(0.01 * len(dfreg)))
+        # We want to separate 5 percent of the data to forecast
+        forecast_out = int(math.ceil(0.05 * len(dfreg)))
 
         # Separating the label here, we want to predict the AdjClose
         forecast_col = 'Adj Close'
@@ -108,15 +107,17 @@ class PredictingTheMarket:
             next_unix += datetime.timedelta(days=1)
             dfreg.loc[next_date] = [np.nan for _ in range(len(dfreg.columns) - 1)] + [i]
 
+        title = 'poly2_test_new'
+        filepath = os.getcwd()
+        file_location = f'{filepath}\\Stock_Data\\{title}.png'
+        plt.clf()
+        plt.savefig(file_location)
         dfreg['Adj Close'].tail(500).plot()
         dfreg['Forecast'].tail(500).plot()
         plt.legend(loc=4)
         plt.xlabel('Date')
         plt.ylabel('Price')
-        title = 'poly2_test_new'
         plt.title(title)
-        filepath = os.getcwd()
-        file_location = f'{filepath}\\Stock_Data\\{title}.png'
         plt.savefig(file_location)
 
         predictions = [f'confidence of linear reg: {confidencereg}',

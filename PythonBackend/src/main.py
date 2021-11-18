@@ -20,10 +20,9 @@ def main():
         ActiveConnecitons.close_connections()
 
 
-def prediction_testing():
+def prediction_testing(ticker, source):
     predicting = PredictingTheMarket.PredictingTheMarket()
-    ticker = 'QQ.L'
-    dataframe = predicting.get_stock_dataframe(ticker)
+    dataframe = predicting.get_stock_dataframe(ticker, source)
     dfreg = predicting.get_dfreg(dataframe)
     predicting.predict(dfreg)
 

@@ -1,9 +1,10 @@
+import json
+
 import pika
 
-import MessageBroker.StockMessageDao
 import main
 from MessageBroker import ActiveConnecitons
-from MessageBroker import RabbitMqResponder
+from MessageHandlers import RequestDao
 
 
 class RabbitMqRequestReceiver:
@@ -24,4 +25,6 @@ class RabbitMqRequestReceiver:
 
     def __callback(self, ch, method, properties, message):
         print(f'received {message}')
-        main.prediction_testing()
+        data = json.loads(message)
+        message = RequestDao.RequestDao(**data)
+        main.prediction_testing(message.Ticker, message.Source)

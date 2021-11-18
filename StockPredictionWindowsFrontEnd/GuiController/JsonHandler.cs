@@ -16,7 +16,6 @@ namespace GuiController
         /// <returns>The deserialized message</returns>
         public static StockMessage DeserializeStockMessage(string message)
         {
-            //// message = message.Replace("\\\\", "\\");
             var obj = JsonConvert.DeserializeObject<StockMessage>(message);
             return obj;
         }
