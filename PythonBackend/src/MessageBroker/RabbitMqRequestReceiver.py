@@ -14,7 +14,7 @@ class RabbitMqRequestReceiver:
     __routing_key = 'StockExchange'
     __channel = None
 
-    def initialize_request_receiver(self):
+    def initialize(self):
         connection = pika.BlockingConnection(pika.ConnectionParameters(self.__broker))
         ActiveConnecitons.active_connections.append(connection)
         self.__channel = connection.channel()
@@ -28,9 +28,9 @@ class RabbitMqRequestReceiver:
         data = json.loads(message)
         message = RequestDao.RequestDao(**data)
         try:
-            main.prediction_testing(message.Ticker, message.Source)
+            main.prediction_testing(message.Ticker, message.Source, message.ModelType)
         except Exception as e:
-            stock_message = StockMessageDao.StockMessageDao("location", [f'Error: {e}'])
+            stock_message = StockMessageDao.StockMessageDao("location", [f'Error: {str(e)}'])
             json_message = stock_message.toJSON()
 
             rmq_resp = RabbitMqResponder.RabbitMqResponder()

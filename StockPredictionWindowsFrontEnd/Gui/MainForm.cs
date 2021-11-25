@@ -55,25 +55,25 @@ namespace Gui
         private void UpdateGui(string message)
         {
             var stockMessage = JsonHandler.DeserializeStockMessage(message);
-            this.UpdateStockPredictions(stockMessage.Predictions);
+            this.UpdateStockPredictions(stockMessage.confidenceOfModel);
             this.UpdateGraph(stockMessage.GraphLocation);
         }
 
         /// <summary>
         /// Displays an error message in a message box.
         /// </summary>
-        /// <param name="errorMessage">The message to display</param>
+        /// <param name="errorMessage">The message to display, it is stored in the model confidence param</param>
         private void ShowErrorMessage(string errorMessage)
         {
             var stockMessage = JsonHandler.DeserializeStockMessage(errorMessage);
-            MessageBox.Show(stockMessage.Predictions[0], "Error");
+            MessageBox.Show(stockMessage.confidenceOfModel, "Error");
         }
 
         /// <summary>
         /// Updates the GUI to display predictions
         /// </summary>
-        /// <param name="stockPrediction">the predictions</param>
-        private void UpdateStockPredictions(List<string> stockPrediction)
+        /// <param name="confidenceOfModel">the confidence of the model used.</param>
+        private void UpdateStockPredictions(string confidenceOfModel)
         {
             if (this.richTextBoxPredictions.InvokeRequired)
             {
@@ -82,7 +82,7 @@ namespace Gui
                     var timeOfMessage = DateTime.Now.ToString("HH:mm:ss.fff");
                     this.richTextBoxPredictions.Text += $"Received at: {timeOfMessage}\n";
 
-                    foreach (var prediction in stockPrediction)
+                    foreach (var prediction in confidenceOfModel)
                     {
                         var message = $"{prediction}\n";
                         this.richTextBoxPredictions.Text += message;
@@ -93,7 +93,7 @@ namespace Gui
             {
                 this.richTextBoxPredictions.Text += DateTime.Now.ToString("mm:ss.fff");
 
-                foreach (var prediction in stockPrediction)
+                foreach (var prediction in confidenceOfModel)
                 {
                     var message = $"{prediction}\n";
                     this.richTextBoxPredictions.Text += message;
@@ -141,7 +141,14 @@ namespace Gui
                 return;
             }
 
-            var controller = new MakePredictions(this.textBoxEnterTicker.Text, this.comboBoxInfoSource.Text);
+            var modelType = this.comboBoxModelType.Text;
+            if (source == "")
+            {
+                MessageBox.Show("Please select a model to use.", "Error");
+                return;
+            }
+
+            var controller = new MakePredictions(ticker, source, modelType);
             controller.GetPredictions();
         }
     }

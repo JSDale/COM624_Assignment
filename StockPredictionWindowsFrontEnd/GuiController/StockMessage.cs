@@ -2,7 +2,6 @@
 
 namespace GuiController
 {
-    using System.Collections.Generic;
 
     /// <summary>
     /// Contains the properties for stock messages.
@@ -12,7 +11,7 @@ namespace GuiController
         /// <summary>
         /// Gets or sets predictions received from backend.
         /// </summary>
-        public List<string> Predictions { get; set; }
+        public string confidenceOfModel { get; set; }
 
         /// <summary>
         /// Gets or sets the file path of the graph image to load.

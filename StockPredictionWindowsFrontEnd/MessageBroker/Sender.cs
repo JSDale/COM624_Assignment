@@ -24,7 +24,8 @@ namespace MessageBroker
         /// </summary>
         /// <param name="ticker">The abbreviation for the company used on the stock market</param>
         /// <param name="stockInfoSource">Where the stock information is gathered</param>
-        public void Send(string ticker, string stockInfoSource)
+        /// <param name="modelType">The type of model to used to predict.</param>
+        public void Send(string ticker, string stockInfoSource, string modelType)
         {
             var factory = new ConnectionFactory() { HostName = "localhost" };
             // ReSharper disable once ConvertToUsingDeclaration
@@ -34,7 +35,7 @@ namespace MessageBroker
                 //// These settings must be the same as the ones in the back-end
                 channel.QueueDeclare(queue: "StockExchange", durable: false, exclusive: false, autoDelete: true, arguments: null);
 
-                var message = JsonSerializer.SerializeMessageToSend(new MessageToSend(ticker, stockInfoSource));
+                var message = JsonSerializer.SerializeMessageToSend(new MessageToSend(ticker, stockInfoSource, modelType));
                 var body = Encoding.UTF8.GetBytes(message);
 
                 channel.BasicPublish(exchange: string.Empty, routingKey: "StockExchange", basicProperties: null, body: body);

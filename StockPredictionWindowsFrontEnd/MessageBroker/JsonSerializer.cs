@@ -2,9 +2,6 @@
 
 namespace MessageBroker
 {
-    using System;
-    using System.Dynamic;
-
     using Newtonsoft.Json;
 
     public static  class JsonSerializer
@@ -21,10 +18,13 @@ namespace MessageBroker
 
         public string Source { get; }
 
-        public MessageToSend(string ticker, string source)
+        public string ModelType { get; }
+
+        public MessageToSend(string ticker, string source, string modelType)
         {
             this.Ticker = ticker;
             this.Source = source;
+            this.ModelType = modelType;
         }
     }
 }

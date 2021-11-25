@@ -12,7 +12,7 @@ namespace GuiController.Tests
         [Fact]
         public void Test1()
         {
-            var controller = new MakePredictions("AAPL", "yahoo");
+            var controller = new MakePredictions("AAPL", "yahoo", "linear");
             controller.GetPredictions();
         }
     }

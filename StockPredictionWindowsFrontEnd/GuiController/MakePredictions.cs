@@ -13,16 +13,19 @@ namespace GuiController
 
         private string informationSource;
 
-        public MakePredictions(string ticker, string informationSource)
+        private string modelType;
+
+        public MakePredictions(string ticker, string informationSource, string modelType)
         {
             this.ticker = ticker;
             this.informationSource = informationSource;
+            this.modelType = modelType;
         }
 
         public void GetPredictions()
         {
             var mb = new MessageBroker.Sender();
-            mb.Send(this.ticker, this.informationSource);
+            mb.Send(this.ticker, this.informationSource, this.modelType);
         }
     }
 }

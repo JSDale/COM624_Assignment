@@ -10,7 +10,7 @@ from UnderstandingData import PandasStockPredictor
 def main():
     try:
         rabbitmq_request_receiver = RabbitMqRequestReceiver.RabbitMqRequestReceiver()
-        rabbitmq_request_receiver.initialize_request_receiver()
+        rabbitmq_request_receiver.initialize()
     except KeyboardInterrupt:
         print('closing active connections, stand by...')
         ActiveConnecitons.close_connections()
@@ -19,10 +19,10 @@ def main():
         ActiveConnecitons.close_connections()
 
 
-def prediction_testing(ticker, source):
+def prediction_testing(ticker, source, model):
     predicting = PredictingTheMarket.PredictingTheMarket()
     try:
-        dataframe = predicting.get_stock_dataframe(ticker, source)
+        dataframe = predicting.get_stock_dataframe(ticker, source, model)
     except Exception:
         raise Exception("Could not get data. Ensure the source or ticker is correct.")
         # TODO log

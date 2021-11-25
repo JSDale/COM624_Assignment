@@ -38,6 +38,7 @@ namespace Gui
             this.textBoxEnterTicker = new System.Windows.Forms.TextBox();
             this.tabPageGraph = new System.Windows.Forms.TabPage();
             this.pictureBoxGraph = new System.Windows.Forms.PictureBox();
+            this.comboBoxModelType = new System.Windows.Forms.ComboBox();
             this.tabControlMenu.SuspendLayout();
             this.EnterStockInfoPage.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -75,6 +76,7 @@ namespace Gui
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.comboBoxModelType);
             this.panel1.Controls.Add(this.richTextBoxPredictions);
             this.panel1.Controls.Add(this.comboBoxInfoSource);
             this.panel1.Controls.Add(this.buttonPredict);
@@ -153,6 +155,21 @@ namespace Gui
             this.pictureBoxGraph.TabIndex = 0;
             this.pictureBoxGraph.TabStop = false;
             // 
+            // comboBoxModelType
+            // 
+            this.comboBoxModelType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxModelType.FormattingEnabled = true;
+            this.comboBoxModelType.Items.AddRange(new object[] {
+            "linear regression",
+            "polynomial regression 2d",
+            "polynomial regression 3d",
+            "k nearest neighbour"});
+            this.comboBoxModelType.Location = new System.Drawing.Point(42, 165);
+            this.comboBoxModelType.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.comboBoxModelType.Name = "comboBoxModelType";
+            this.comboBoxModelType.Size = new System.Drawing.Size(266, 28);
+            this.comboBoxModelType.TabIndex = 11;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -185,6 +202,7 @@ namespace Gui
         private System.Windows.Forms.ComboBox comboBoxInfoSource;
         private System.Windows.Forms.Button buttonPredict;
         private System.Windows.Forms.TextBox textBoxEnterTicker;
+        private System.Windows.Forms.ComboBox comboBoxModelType;
     }
 }
 

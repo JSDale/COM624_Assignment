@@ -23,8 +23,9 @@ class PredictingTheMarket:
     __save_to_files = SavingToFiles.SaveToFiles()
     __formatted_dataframe = None
     __ticker = None
+    __model = None
 
-    def get_stock_dataframe(self, ticker, source):
+    def get_stock_dataframe(self, ticker, source, model):
         print('getting data...')
         self.__ticker = ticker
         dataframe = web.DataReader(self.__ticker, source, start=self.__start_date, end=self.__end_date)
@@ -79,7 +80,7 @@ class PredictingTheMarket:
         rmq_resp.respond_with_prediction(json)
 
     @staticmethod
-    def __get_x_and_y_values(self, X, forecast_out):
+    def __get_x_and_y_values(X, forecast_out):
         # Finally We want to find Data Series of late X and early X (train) for model generation and evaluation
         X_lately = X[-forecast_out:]
         X = X[:-forecast_out]

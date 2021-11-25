@@ -4,10 +4,10 @@ import json
 class StockMessageDao:
 
     GraphLocation = None
-    Predictions = []
+    ModelConfidence = None
 
-    def __init__(self, graph_filepath, predictions):
-        self.Predictions = predictions
+    def __init__(self, graph_filepath, confidence):
+        self.ModelConfidence = confidence
         self.GraphLocation = graph_filepath
 
     def toJSON(self):
