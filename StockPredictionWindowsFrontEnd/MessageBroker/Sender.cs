@@ -31,7 +31,7 @@ namespace MessageBroker
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                //// These settings must be the same as the ones in the back-ends
+                //// These settings must be the same as the ones in the back-end
                 channel.QueueDeclare(queue: "StockExchange", durable: false, exclusive: false, autoDelete: false, arguments: null);
 
                 var message = JsonSerializer.SerializeMessageToSend(new MessageToSend(ticker, stockInfoSource));

@@ -11,7 +11,6 @@ def main():
     try:
         rabbitmq_request_receiver = RabbitMqRequestReceiver.RabbitMqRequestReceiver()
         rabbitmq_request_receiver.initialize_request_receiver()
-
     except KeyboardInterrupt:
         print('closing active connections, stand by...')
         ActiveConnecitons.close_connections()

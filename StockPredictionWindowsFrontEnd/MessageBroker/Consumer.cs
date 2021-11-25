@@ -12,7 +12,6 @@ namespace MessageBroker
 {
     using System;
     using System.Text;
-    using System.Threading.Tasks;
 
     using CustomEvents;
 
@@ -95,6 +94,12 @@ namespace MessageBroker
                     var body = ea.Body.ToArray();
                     var wibble = ea.RoutingKey;
                     var message = Encoding.UTF8.GetString(body);
+                    if (message.ToLower().Contains("error"))
+                    {
+                        CustomDisplayError.InvokeDisplayError(message);
+                        return;
+                    }
+
                     UpdateGui.InvokeUpdateStock(message);
                 };
         }

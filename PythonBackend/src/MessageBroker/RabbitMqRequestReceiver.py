@@ -3,7 +3,7 @@ import json
 import pika
 
 import main
-from MessageBroker import ActiveConnecitons
+from MessageBroker import ActiveConnecitons, StockMessageDao, RabbitMqResponder
 from MessageHandlers import RequestDao
 
 
@@ -27,4 +27,11 @@ class RabbitMqRequestReceiver:
         print(f'received {message}')
         data = json.loads(message)
         message = RequestDao.RequestDao(**data)
-        main.prediction_testing(message.Ticker, message.Source)
+        try:
+            main.prediction_testing(message.Ticker, message.Source)
+        except Exception as e:
+            stock_message = StockMessageDao.StockMessageDao("location", [f'Error: {e}'])
+            json_message = stock_message.toJSON()
+
+            rmq_resp = RabbitMqResponder.RabbitMqResponder()
+            rmq_resp.respond_with_prediction(json_message)
