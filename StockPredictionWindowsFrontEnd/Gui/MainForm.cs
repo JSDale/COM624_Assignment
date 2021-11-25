@@ -55,7 +55,7 @@ namespace Gui
         private void UpdateGui(string message)
         {
             var stockMessage = JsonHandler.DeserializeStockMessage(message);
-            this.UpdateStockPredictions(stockMessage.confidenceOfModel);
+            this.UpdateStockPredictions(stockMessage.ModelConfidence);
             this.UpdateGraph(stockMessage.GraphLocation);
         }
 
@@ -66,7 +66,7 @@ namespace Gui
         private void ShowErrorMessage(string errorMessage)
         {
             var stockMessage = JsonHandler.DeserializeStockMessage(errorMessage);
-            MessageBox.Show(stockMessage.confidenceOfModel, "Error");
+            MessageBox.Show(stockMessage.ModelConfidence, "Error");
         }
 
         /// <summary>
@@ -80,24 +80,14 @@ namespace Gui
                 this.richTextBoxPredictions.Invoke((MethodInvoker)delegate
                 {
                     var timeOfMessage = DateTime.Now.ToString("HH:mm:ss.fff");
-                    this.richTextBoxPredictions.Text += $"Received at: {timeOfMessage}\n";
-
-                    foreach (var prediction in confidenceOfModel)
-                    {
-                        var message = $"{prediction}\n";
-                        this.richTextBoxPredictions.Text += message;
-                    }
+                    this.richTextBoxPredictions.AppendText($"\nReceived at: {timeOfMessage}\n{confidenceOfModel}");
                 });
             }
             else
             {
                 this.richTextBoxPredictions.Text += DateTime.Now.ToString("mm:ss.fff");
-
-                foreach (var prediction in confidenceOfModel)
-                {
-                    var message = $"{prediction}\n";
-                    this.richTextBoxPredictions.Text += message;
-                }
+                var timeOfMessage = DateTime.Now.ToString("HH:mm:ss.fff");
+                this.richTextBoxPredictions.AppendText($"\nReceived at: {timeOfMessage}\n{confidenceOfModel}");
             }
         }
 

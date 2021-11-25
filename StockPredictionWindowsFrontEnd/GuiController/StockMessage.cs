@@ -11,7 +11,7 @@ namespace GuiController
         /// <summary>
         /// Gets or sets predictions received from backend.
         /// </summary>
-        public string confidenceOfModel { get; set; }
+        public string ModelConfidence { get; set; }
 
         /// <summary>
         /// Gets or sets the file path of the graph image to load.
