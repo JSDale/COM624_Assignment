@@ -99,7 +99,10 @@ namespace Gui
             // 
             // comboBoxInfoSource
             // 
+            this.comboBoxInfoSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxInfoSource.FormattingEnabled = true;
+            this.comboBoxInfoSource.Items.AddRange(new object[] {
+            "yahoo"});
             this.comboBoxInfoSource.Location = new System.Drawing.Point(42, 240);
             this.comboBoxInfoSource.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.comboBoxInfoSource.Name = "comboBoxInfoSource";

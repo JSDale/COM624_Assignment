@@ -23,10 +23,12 @@ class PredictingTheMarket:
     __stock_type = ['Adj Close']
     __save_to_files = SavingToFiles.SaveToFiles()
     __dfreg = None
+    __ticker = None
 
     def get_stock_dataframe(self, ticker, source):
         print('getting data...')
-        dataframe = web.DataReader(ticker, source, start=self.__start_date, end=self.__end_date)
+        self.__ticker = ticker
+        dataframe = web.DataReader(self.__ticker, source, start=self.__start_date, end=self.__end_date)
         return dataframe
 
     def __get_dfreg(self, dataframe):
@@ -54,12 +56,18 @@ class PredictingTheMarket:
             next_unix += datetime.timedelta(days=1)
             self.__dfreg.loc[next_date] = [np.nan for _ in range(len(self.__dfreg.columns) - 1)] + [i]
 
-        title = 'poly2_test_new'
+        title = self.__generate_title()
         filepath = os.getcwd()
         file_location = f'{filepath}\\Stock_Data\\{title}.png'
         self.plot_graph(file_location, title)
 
         self.__send_message_over_rabbit_mq(file_location, predictions)
+
+    def __generate_title(self):
+        title = f'{self.__ticker}-{datetime.datetime.now()}'
+        title = title.replace(' ', '_')
+        title = title.replace(':', '-')
+        return title
 
     @staticmethod
     def __send_message_over_rabbit_mq(file_location, predictions):
