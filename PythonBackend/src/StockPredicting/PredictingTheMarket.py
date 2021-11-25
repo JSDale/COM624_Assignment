@@ -25,12 +25,9 @@ class PredictingTheMarket:
     __save_to_files = SavingToFiles.SaveToFiles()
 
     def get_stock_dataframe(self, ticker, source):
-        try:
-            print('getting data...')
-            dataframe = web.DataReader(ticker, source, start=self.__start_date, end=self.__end_date)
-            return dataframe
-        except Exception as e:
-            print(f'error: {str(e)}')
+        print('getting data...')
+        dataframe = web.DataReader(ticker, source, start=self.__start_date, end=self.__end_date)
+        return dataframe
 
     def get_dfreg(self, dataframe):
         print(dataframe)

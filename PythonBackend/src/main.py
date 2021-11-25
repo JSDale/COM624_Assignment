@@ -21,7 +21,11 @@ def main():
 
 def prediction_testing(ticker, source):
     predicting = PredictingTheMarket.PredictingTheMarket()
-    dataframe = predicting.get_stock_dataframe(ticker, source)
+    try:
+        dataframe = predicting.get_stock_dataframe(ticker, source)
+    except Exception:
+        raise Exception("Could not get data. Ensure the source or ticker is correct.")
+
     dfreg = predicting.get_dfreg(dataframe)
     predicting.predict(dfreg)
 
