@@ -7,13 +7,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn import preprocessing, model_selection
-from sklearn.linear_model import LinearRegression
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.linear_model import Ridge
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import make_pipeline
 from FileManipulation import SavingToFiles
 from MessageBroker import RabbitMqResponder, StockMessageDao
+from StockPredicting import LinearRegressionModel as lrm
+from StockPredicting import PolynomialRegressionTwoDimensional as pr2
+from StockPredicting import PolynomialThreeDimensional as pr3
+from StockPredicting import KNearestNeighbour as knn
 
 
 class PredictingTheMarket:
@@ -22,7 +21,7 @@ class PredictingTheMarket:
     __end_date = datetime.datetime.now()
     __stock_type = ['Adj Close']
     __save_to_files = SavingToFiles.SaveToFiles()
-    __dfreg = None
+    __formatted_dataframe = None
     __ticker = None
 
     def get_stock_dataframe(self, ticker, source):
@@ -33,8 +32,8 @@ class PredictingTheMarket:
 
     def __get_dfreg(self, dataframe):
         print(dataframe)
-        self.__dfreg = dataframe.loc[:, ['Adj Close', 'Volume']]
-        print(self.__dfreg)
+        self.__formatted_dataframe = dataframe.loc[:, ['Adj Close', 'Volume']]
+        print(self.__formatted_dataframe)
 
     def predict(self, dataframe):
         self.__get_dfreg(dataframe)
@@ -43,25 +42,25 @@ class PredictingTheMarket:
         y = self.__get_y_(forecast_out)
 
         X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.2)
-        clfreg = self.__apply_linear_regression(X_train, y_train)
-        clfpoly2 = self.__apply_quadratic_regression_two_dimensions(X_train, y_train)
-        clfpoly3 = self.__apply_quadratic_regression_three_dimensional(X_train, y_train)
-        clfknn = self.__apply_k_nearest_neighbour(X_train, y_train)
-        confidencepoly2, predictions = self.__get_confidence_of_all_models(X_test, clfknn, clfpoly2, clfpoly3, clfreg,
+        clfreg = lrm.LinearRegressionModel.apply_linear_regression(X_train, y_train)
+        clfpoly2 = pr2.PolynomialRegressionTwoDimensional.apply_quadratic_regression_two_dimensions(X_train, y_train)
+        clfpoly3 = pr3.PolynomialThreeDimensional.apply_quadratic_regression_three_dimensional(X_train, y_train)
+        clfknn = knn.KNearestNeighbour.apply_k_nearest_neighbour(X_train, y_train)
+        confidence_of_quadratic_two_dimensional, confidences = self.__get_confidence_of_all_models(X_test, clfknn, clfpoly2, clfpoly3, clfreg,
                                                                            y_test)
         next_unix = self.get_next_unix_date()
-        forecast_set = self.forecast(X_lately, clfpoly2, confidencepoly2, forecast_out)
+        forecast_set = self.forecast(X_lately, clfpoly2, confidence_of_quadratic_two_dimensional, forecast_out)
         for i in forecast_set:
             next_date = next_unix
             next_unix += datetime.timedelta(days=1)
-            self.__dfreg.loc[next_date] = [np.nan for _ in range(len(self.__dfreg.columns) - 1)] + [i]
+            self.__formatted_dataframe.loc[next_date] = [np.nan for _ in range(len(self.__formatted_dataframe.columns) - 1)] + [i]
 
         title = self.__generate_title()
         filepath = os.getcwd()
         file_location = f'{filepath}\\Stock_Data\\{title}.png'
         self.plot_graph(file_location, title)
 
-        self.__send_message_over_rabbit_mq(file_location, predictions)
+        self.__send_message_over_rabbit_mq(file_location, confidences)
 
     def __generate_title(self):
         title = f'{self.__ticker}-{datetime.datetime.now()}'
@@ -86,7 +85,7 @@ class PredictingTheMarket:
 
     def __get_y_(self, forecast_out):
         # Separate label and identify it as y
-        y = np.array(self.__dfreg['label'])
+        y = np.array(self.__formatted_dataframe['label'])
         y = y[:-forecast_out]
         print('Dimension of y', y.shape)
         return y
@@ -94,7 +93,7 @@ class PredictingTheMarket:
     def forecast(self, X_lately, clfpoly2, confidencepoly2, forecast_out):
         # Printing the forecast
         forecast_set = clfpoly2.predict(X_lately)
-        self.__dfreg['Forecast'] = np.nan
+        self.__formatted_dataframe['Forecast'] = np.nan
         print(forecast_set, confidencepoly2, forecast_out)
         return forecast_set
 
@@ -106,7 +105,7 @@ class PredictingTheMarket:
         return X, forecast_out
 
     def get_next_unix_date(self):
-        last_date = self.__dfreg.iloc[-1].name
+        last_date = self.__formatted_dataframe.iloc[-1].name
         last_unix = last_date
         next_unix = last_unix + datetime.timedelta(days=1)
         return next_unix
@@ -114,8 +113,8 @@ class PredictingTheMarket:
     def plot_graph(self, file_location, title):
         plt.clf()
         plt.savefig(file_location)
-        self.__dfreg['Adj Close'].tail(500).plot()
-        self.__dfreg['Forecast'].tail(500).plot()
+        self.__formatted_dataframe['Adj Close'].tail(500).plot()
+        self.__formatted_dataframe['Forecast'].tail(500).plot()
         plt.legend(loc=4)
         plt.xlabel('Date')
         plt.ylabel('Price')
@@ -138,41 +137,17 @@ class PredictingTheMarket:
                        f'confidence of KNN: {confidence_of_k_nearest_neighbour}']
         return confidence_of_poly_2d, predictions
 
-    @staticmethod
-    def __apply_k_nearest_neighbour(X_train, y_train):
-        clfknn = KNeighborsRegressor(n_neighbors=2)
-        clfknn.fit(X_train, y_train)
-        return clfknn
-
-    @staticmethod
-    def __apply_quadratic_regression_three_dimensional(X_train, y_train):
-        clfpoly3 = make_pipeline(PolynomialFeatures(3), Ridge())
-        clfpoly3.fit(X_train, y_train)
-        return clfpoly3
-
-    @staticmethod
-    def __apply_quadratic_regression_two_dimensions(X_train, y_train):
-        clfpoly2 = make_pipeline(PolynomialFeatures(2), Ridge())
-        clfpoly2.fit(X_train, y_train)
-        return clfpoly2
-
-    @staticmethod
-    def __apply_linear_regression(X_train, y_train):
-        clfreg = LinearRegression(n_jobs=-1)
-        clfreg.fit(X_train, y_train)
-        return clfreg
-
     def __extract_value_of_x(self, forecast_out):
         # Separating the label here, we want to predict the AdjClose
         forecast_col = 'Adj Close'
-        self.__dfreg['label'] = self.__dfreg[forecast_col].shift(-forecast_out)
-        X = np.array(self.__dfreg.drop(['label'], 1))
+        self.__formatted_dataframe['label'] = self.__formatted_dataframe[forecast_col].shift(-forecast_out)
+        X = np.array(self.__formatted_dataframe.drop(['label'], 1))
         return X
 
     def __format_data(self):
         # Drop missing value
-        self.__dfreg.fillna(value=-99999, inplace=True)
-        print(self.__dfreg.shape)
+        self.__formatted_dataframe.fillna(value=-99999, inplace=True)
+        print(self.__formatted_dataframe.shape)
         # We want to separate 5 percent of the data to forecast
-        forecast_out = int(math.ceil(0.05 * len(self.__dfreg)))
+        forecast_out = int(math.ceil(0.05 * len(self.__formatted_dataframe)))
         return forecast_out

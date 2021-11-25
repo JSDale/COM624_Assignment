@@ -85,7 +85,7 @@ namespace MessageBroker
                 queue: this.queueName,
                 durable: false,
                 exclusive: false,
-                autoDelete: false,
+                autoDelete: true,
                 arguments: null);
 
             this.consumer = new EventingBasicConsumer(this.channel);

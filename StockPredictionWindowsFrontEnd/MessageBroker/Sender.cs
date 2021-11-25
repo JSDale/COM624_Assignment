@@ -32,7 +32,7 @@ namespace MessageBroker
             using (var channel = connection.CreateModel())
             {
                 //// These settings must be the same as the ones in the back-end
-                channel.QueueDeclare(queue: "StockExchange", durable: false, exclusive: false, autoDelete: false, arguments: null);
+                channel.QueueDeclare(queue: "StockExchange", durable: false, exclusive: false, autoDelete: true, arguments: null);
 
                 var message = JsonSerializer.SerializeMessageToSend(new MessageToSend(ticker, stockInfoSource));
                 var body = Encoding.UTF8.GetBytes(message);

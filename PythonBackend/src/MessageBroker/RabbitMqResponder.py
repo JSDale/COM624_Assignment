@@ -17,7 +17,7 @@ class RabbitMqResponder:
         connection = pika.BlockingConnection(pika.ConnectionParameters(self.__host))
         ActiveConnecitons.active_connections.append(connection)
         self.__channel = connection.channel()
-        self.__channel.queue_declare(queue=self.__queue)
+        self.__channel.queue_declare(queue=self.__queue, auto_delete=True)
 
     def respond_with_prediction(self, message):
         self.__channel.basic_publish(exchange='', routing_key=self.__routing_key, body=message)

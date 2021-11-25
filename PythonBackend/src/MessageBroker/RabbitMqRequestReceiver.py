@@ -18,7 +18,7 @@ class RabbitMqRequestReceiver:
         connection = pika.BlockingConnection(pika.ConnectionParameters(self.__broker))
         ActiveConnecitons.active_connections.append(connection)
         self.__channel = connection.channel()
-        self.__channel.queue_declare(queue=self.__queue)
+        self.__channel.queue_declare(queue=self.__queue, auto_delete=True)
         self.__channel.basic_consume(queue=self.__queue, auto_ack=True, on_message_callback=self.__callback)
         print('waiting for messages.\nPress ctrl + c to exit, which may take a few seconds')
         self.__channel.start_consuming()
