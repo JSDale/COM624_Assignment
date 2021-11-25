@@ -26,9 +26,7 @@ def prediction_testing(ticker, source):
     except Exception:
         raise Exception("Could not get data. Ensure the source or ticker is correct.")
         # TODO log
-
-    dfreg = predicting.get_dfreg(dataframe)
-    predicting.predict(dfreg)
+    predicting.predict(dataframe)
 
 
 def risk_return_plotting():

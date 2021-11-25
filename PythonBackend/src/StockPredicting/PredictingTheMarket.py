@@ -29,23 +29,16 @@ class PredictingTheMarket:
         dataframe = web.DataReader(ticker, source, start=self.__start_date, end=self.__end_date)
         return dataframe
 
-    def get_dfreg(self, dataframe):
+    def __get_dfreg(self, dataframe):
         print(dataframe)
         self.__dfreg = dataframe.loc[:, ['Adj Close', 'Volume']]
         print(self.__dfreg)
 
-    def predict(self):
+    def predict(self, dataframe):
+        self.__get_dfreg(dataframe)
         X, forecast_out = self.preprocess_x()
-        # Finally We want to find Data Series of late X and early X (train) for model generation and evaluation
-        X_lately = X[-forecast_out:]
-        X = X[:-forecast_out]
-
-        # Separate label and identify it as y
-        y = np.array(self.__dfreg['label'])
-        y = y[:-forecast_out]
-
-        print('Dimension of X', X.shape)
-        print('Dimension of y', y.shape)
+        X, X_lately = self.__get_x_and_y_values(X, forecast_out)
+        y = self.__get_y_(forecast_out)
 
         X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.2)
         clfreg = self.__apply_linear_regression(X_train, y_train)
@@ -55,9 +48,7 @@ class PredictingTheMarket:
         confidencepoly2, predictions = self.__get_confidence_of_all_models(X_test, clfknn, clfpoly2, clfpoly3, clfreg,
                                                                            y_test)
         next_unix = self.get_next_unix_date()
-
         forecast_set = self.forecast(X_lately, clfpoly2, confidencepoly2, forecast_out)
-
         for i in forecast_set:
             next_date = next_unix
             next_unix += datetime.timedelta(days=1)
@@ -68,12 +59,29 @@ class PredictingTheMarket:
         file_location = f'{filepath}\\Stock_Data\\{title}.png'
         self.plot_graph(file_location, title)
 
+        self.__send_message_over_rabbit_mq(file_location, predictions)
+
+    @staticmethod
+    def __send_message_over_rabbit_mq(file_location, predictions):
         location = file_location
         stock_message = StockMessageDao.StockMessageDao(location, predictions)
         json = stock_message.toJSON()
-
         rmq_resp = RabbitMqResponder.RabbitMqResponder()
         rmq_resp.respond_with_prediction(json)
+
+    def __get_x_and_y_values(self, X, forecast_out):
+        # Finally We want to find Data Series of late X and early X (train) for model generation and evaluation
+        X_lately = X[-forecast_out:]
+        X = X[:-forecast_out]
+        print('Dimension of X', X.shape)
+        return X, X_lately
+
+    def __get_y_(self, forecast_out):
+        # Separate label and identify it as y
+        y = np.array(self.__dfreg['label'])
+        y = y[:-forecast_out]
+        print('Dimension of y', y.shape)
+        return y
 
     def forecast(self, X_lately, clfpoly2, confidencepoly2, forecast_out):
         # Printing the forecast
