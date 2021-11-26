@@ -9,10 +9,10 @@ import matplotlib.pyplot as plt
 from sklearn import preprocessing, model_selection
 from FileManipulation import SavingToFiles
 from MessageBroker import RabbitMqResponder, StockMessageDao
-from StockPredicting import LinearRegressionModel as lrm
-from StockPredicting import PolynomialRegressionTwoDimensional as pr2
-from StockPredicting import PolynomialThreeDimensional as pr3
-from StockPredicting import KNearestNeighbour as knn
+from StockPredicting import LinearRegressionModel as Lr
+from StockPredicting import PolynomialRegressionTwoDimensional as Pr2
+from StockPredicting import PolynomialThreeDimensional as Pr3
+from StockPredicting import KNearestNeighbour as Knn
 
 
 class PredictingTheMarket:
@@ -44,19 +44,12 @@ class PredictingTheMarket:
         y = self.__get_y_(forecast_out)
 
         X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.2)
-        clfreg = self.__select_model(X_train, y_train)
-        # clfpoly2 = pr2.PolynomialRegressionTwoDimensional.apply_quadratic_regression_two_dimensions(X_train, y_train)
-        # clfpoly3 = pr3.PolynomialThreeDimensional.apply_quadratic_regression_three_dimensional(X_train, y_train)
-        # clfknn = knn.KNearestNeighbour.apply_k_nearest_neighbour(X_train, y_train)
+        model = self.__select_model(X_train, y_train)
 
-        # confidence_of_quadratic_two_dimensional, confidences = PredictingTheMarket.__get_confidence_of_all_models(
-        #     X_test, clfknn, clfpoly2, clfpoly3, clfreg, y_test)
-
-        confidence = self.__confidence_of_model(clfreg, X_test, y_test)
+        confidence = self.__confidence_of_model(model, X_test, y_test)
 
         next_unix = self.get_next_unix_date()
-        # forecast_set = self.forecast(X_lately, clfpoly2, confidence_of_quadratic_two_dimensional, forecast_out)
-        forecast_set = self.forecast(X_lately, clfreg, confidence, forecast_out)
+        forecast_set = self.forecast(X_lately, model, confidence, forecast_out)
         for i in forecast_set:
             next_date = next_unix
             next_unix += datetime.timedelta(days=1)
@@ -133,23 +126,15 @@ class PredictingTheMarket:
 
     def __select_model(self, X_train, y_train):
         if self.__model_type.lower() == 'linear regression':
-            return lrm.LinearRegressionModel.apply_linear_regression(X_train, y_train)
+            return Lr.LinearRegressionModel.apply_linear_regression(X_train, y_train)
+        elif self.__model_type.lower() == 'polynomial 2d':
+            return Pr2.PolynomialRegressionTwoDimensional.apply_quadratic_regression_two_dimensions(X_train, y_train)
+        elif self.__model_type.lower() == 'polynomial 3d':
+            return Pr3.PolynomialThreeDimensional.apply_quadratic_regression_three_dimensional(X_train, y_train)
+        elif self.__model_type.lower() == 'k nearest neighbour':
+            return Knn.KNearestNeighbour.apply_k_nearest_neighbour(X_train, y_train)
 
-    @staticmethod
-    def __get_confidence_of_all_models(X_test, clfknn, clfpoly2, clfpoly3, clfreg, y_test):
-        confidence_of_regression = clfreg.score(X_test, y_test)
-        confidence_of_poly_2d = clfpoly2.score(X_test, y_test)
-        confidence_of_poly_3d = clfpoly3.score(X_test, y_test)
-        confidence_of_k_nearest_neighbour = clfknn.score(X_test, y_test)
-        print("The linear regression confidence is ", confidence_of_regression)
-        print("The quadratic regression 2 confidence is ", confidence_of_poly_2d)
-        print("The quadratic regression 3 confidence is ", confidence_of_poly_3d)
-        print("The knn regression confidence is ", confidence_of_k_nearest_neighbour)
-        predictions = [f'confidence of linear reg: {confidence_of_regression}',
-                       f'confidence of polynomial2: {confidence_of_poly_2d}',
-                       f'confidence of polynomial3: {confidence_of_poly_3d}',
-                       f'confidence of KNN: {confidence_of_k_nearest_neighbour}']
-        return confidence_of_poly_2d, predictions
+        raise Exception('The model is not correct, choose again.')
 
     def __extract_value_of_x(self, forecast_out):
         # Separating the label here, we want to predict the AdjClose
