@@ -14,7 +14,7 @@ namespace MessageBroker
     using System.Text;
 
     using CustomEvents;
-
+    using MessageTemplates;
     using RabbitMQ.Client;
     using RabbitMQ.Client.Events;
 
@@ -66,7 +66,7 @@ namespace MessageBroker
         {
             if (this.consumer == null)
             {
-                throw new NullReferenceException("consumer was null.");
+                return;
             }
 
             this.channel.BasicConsume(queue: this.queueName, autoAck: true, consumer: this.consumer);
@@ -77,9 +77,17 @@ namespace MessageBroker
         /// </summary>
         public void Initialize()
         {
-            var factory = new ConnectionFactory() { HostName = this.hostName };
-            // ReSharper disable once ConvertToUsingDeclaration
-            this.connection = factory.CreateConnection();
+            try
+            {
+                var factory = new ConnectionFactory() { HostName = this.hostName };
+                // ReSharper disable once ConvertToUsingDeclaration
+                this.connection = factory.CreateConnection();
+            }
+            catch
+            {
+               CustomDisplayError.InvokeDisplayError("Could not connect to RabbitMQ, ensure the service is running");
+                return;
+            }
             this.channel = this.connection.CreateModel();
             this.channel.QueueDeclare(
                 queue: this.queueName,
@@ -89,19 +97,21 @@ namespace MessageBroker
                 arguments: null);
 
             this.consumer = new EventingBasicConsumer(this.channel);
-            this.consumer.Received += (model, ea) =>
-                {
-                    var body = ea.Body.ToArray();
-                    var wibble = ea.RoutingKey;
-                    var message = Encoding.UTF8.GetString(body);
-                    if (message.ToLower().Contains("error"))
-                    {
-                        CustomDisplayError.InvokeDisplayError(message);
-                        return;
-                    }
+            this.consumer.Received += this.WhenConsumed;
+        }
 
-                    UpdateGui.InvokeUpdateStock(message);
-                };
+        private void WhenConsumed(object model, BasicDeliverEventArgs ea)
+        {
+            var body = ea.Body.ToArray();
+            var message = Encoding.UTF8.GetString(body);
+            var obj = JsonHandler.DeserializeStockMessage(message);
+            if (message.ToLower().Contains("error"))
+            {
+                CustomDisplayError.InvokeDisplayError(obj.ModelConfidence);
+                return;
+            }
+
+            UpdateGui.InvokeUpdateStock(obj);
         }
 
         /// <summary>

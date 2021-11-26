@@ -10,37 +10,77 @@
 
 namespace MessageBroker
 {
+    using System;
     using System.Text;
-
+    using MessageTemplates;
     using RabbitMQ.Client;
 
     /// <summary>
     /// Sends the messages to python backend
     /// </summary>
-    public class Sender
+    public class Sender : IDisposable
     {
         /// <summary>
-        /// Sends the messages
+        /// The hostname for rabbitMQ
+        /// </summary>
+        private readonly string hostname;
+
+        /// <summary>
+        /// Creates the connection to rabbitMQ.
+        /// </summary>
+        private  ConnectionFactory factory;
+
+        private IConnection connection;
+
+        public Sender(string hostname)
+        {
+            this.hostname = hostname;
+        }
+
+        /// <summary>
+        /// Initializes the rabbitMQ connection.
+        /// </summary>
+        public void Initialize()
+        {
+            try
+            {
+                this.factory = new ConnectionFactory() { HostName = this.hostname };
+                this.connection = factory.CreateConnection();
+            }
+            catch
+            {
+                CustomEvents.CustomDisplayError.InvokeDisplayError("Could not connect to rabbitMQ, ensure service is running");
+            }
+        }
+
+        /// <summary>
+        /// Sends the messages to RabbitMQ
         /// </summary>
         /// <param name="ticker">The abbreviation for the company used on the stock market</param>
         /// <param name="stockInfoSource">Where the stock information is gathered</param>
         /// <param name="modelType">The type of model to used to predict.</param>
-        public void Send(string ticker, string stockInfoSource, string modelType)
+        public void GetPredictions(string messageAsJson)
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            // ReSharper disable once ConvertToUsingDeclaration
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
+            using (var channel = this.connection.CreateModel())
             {
                 //// These settings must be the same as the ones in the back-end
                 channel.QueueDeclare(queue: "StockExchange", durable: false, exclusive: false, autoDelete: true, arguments: null);
 
-                var message = JsonSerializer.SerializeMessageToSend(new MessageToSend(ticker, stockInfoSource, modelType));
-                var body = Encoding.UTF8.GetBytes(message);
+                var body = Encoding.UTF8.GetBytes(messageAsJson);
 
                 channel.BasicPublish(exchange: string.Empty, routingKey: "StockExchange", basicProperties: null, body: body);
                 
             }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.connection?.Dispose();
+            this.connection = null;
+            this.factory = null;
         }
     }
 }

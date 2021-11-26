@@ -2,21 +2,20 @@
 
 namespace Gui
 {
+    using MessageBroker;
+    using MessageTemplates;
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using System.Windows.Forms;
-
-    using GuiController;
-
-    using MessageBroker;
 
     /// <summary>
     /// The main form for the application
     /// </summary>
     public partial class MainForm : Form
     {
+        private readonly Sender rmqSender = new Sender("localhost");
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MainForm"/> class.
         /// </summary>
@@ -25,6 +24,7 @@ namespace Gui
             this.InitializeComponent();
             this.InitEventListeners();
             this.StartConsumer();
+            this.rmqSender.Initialize();
         }
 
         /// <summary>
@@ -51,12 +51,11 @@ namespace Gui
         /// <summary>
         /// Updates GUI with new predictions.
         /// </summary>
-        /// <param name="message">the returned message from backend.</param>
-        private void UpdateGui(string message)
+        /// <param name="returnedMessage">the returned message from backend.</param>
+        private void UpdateGui(StockMessage returnedMessage)
         {
-            var stockMessage = JsonHandler.DeserializeStockMessage(message);
-            this.UpdateStockPredictions(stockMessage.ModelConfidence);
-            this.UpdateGraph(stockMessage.GraphLocation);
+            this.UpdateStockPredictions(returnedMessage.ModelConfidence);
+            this.UpdateGraph(returnedMessage.GraphLocation);
         }
 
         /// <summary>
@@ -65,8 +64,7 @@ namespace Gui
         /// <param name="errorMessage">The message to display, it is stored in the model confidence param</param>
         private void ShowErrorMessage(string errorMessage)
         {
-            var stockMessage = JsonHandler.DeserializeStockMessage(errorMessage);
-            MessageBox.Show(stockMessage.ModelConfidence, "Error");
+            MessageBox.Show(errorMessage, "Error");
         }
 
         /// <summary>
@@ -118,28 +116,38 @@ namespace Gui
         private void buttonPredict_Click(object sender, EventArgs e)
         {
             var ticker = this.textBoxEnterTicker.Text;
+            var source = this.comboBoxInfoSource.Text;
+            var modelType = this.comboBoxModelType.Text;
+            if(!this.UserEnteredDataOk(ticker, source, modelType))
+            {
+                return;
+            }
+            var message = JsonSerializer.SerializeMessageToSend(new MessageToSend(ticker, source, modelType));
+           
+            this.rmqSender.GetPredictions(message);
+        }
+
+        private bool UserEnteredDataOk(string ticker, string source, string modelType)
+        {
             if (ticker == "")
             {
                 MessageBox.Show("Please enter a Ticker in the box, example: AAPL", "Error");
-                return;
+                return false;
             }
 
-            var source = this.comboBoxInfoSource.Text;
             if (source == "")
             {
                 MessageBox.Show("Please select an information source.", "Error");
-                return;
+                return false;
             }
 
-            var modelType = this.comboBoxModelType.Text;
-            if (source == "")
+            if (modelType == "")
             {
                 MessageBox.Show("Please select a model to use.", "Error");
-                return;
+                return false;
             }
 
-            var controller = new MakePredictions(ticker, source, modelType);
-            controller.GetPredictions();
+            return true;
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿
 
+using MessageTemplates;
+
 namespace CustomEvents
 {
     /// <summary>
@@ -10,8 +12,8 @@ namespace CustomEvents
         /// <summary>
         /// delegate for passing stock predictions to GUI
         /// </summary>
-        /// <param name="stockPredictions">The predictions to pass</param>
-        public delegate void UpdateStock(string stockPredictions);
+        /// <param name="returnedMessage">The predictions to pass</param>
+        public delegate void UpdateStock(StockMessage returnedMessage);
         
         /// <summary>
         /// Event to handle when stock predictions are published
@@ -19,12 +21,12 @@ namespace CustomEvents
         public static event UpdateStock UpdateStockEvent;
 
         /// <summary>
-        /// Invokes the <see cref="UpdateStockEvent"/>.
+        /// Invokes the <see cref="InvokeUpdateStock"/>.
         /// </summary>
-        /// <param name="stockPredictions">the predictions to pass to GUI</param>
-        public static void InvokeUpdateStock(string stockPredictions)
+        /// <param name="returnedMessage">the predictions to pass to GUI</param>
+        public static void InvokeUpdateStock(StockMessage returnedMessage)
         {
-            UpdateStockEvent.Invoke(stockPredictions);
+            UpdateStockEvent.Invoke(returnedMessage);
         }
     }
 }
