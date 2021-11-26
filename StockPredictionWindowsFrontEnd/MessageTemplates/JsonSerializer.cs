@@ -1,6 +1,6 @@
 ﻿
 
-namespace MessageBroker
+namespace MessageTemplates
 {
     using Newtonsoft.Json;
 

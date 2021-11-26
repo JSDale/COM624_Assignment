@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CustomEvents\CustomEvents.csproj" />
+    <ProjectReference Include="..\MessageTemplates\MessageTemplates.csproj" />
   </ItemGroup>
 
 </Project>

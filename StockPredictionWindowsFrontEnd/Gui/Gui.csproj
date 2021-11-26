@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GuiController\GuiController.csproj" />
+    <ProjectReference Include="..\CustomEvents\CustomEvents.csproj" />
+    <ProjectReference Include="..\MessageBroker\MessageBroker.csproj" />
+    <ProjectReference Include="..\MessageTemplates\MessageTemplates.csproj" />
   </ItemGroup>
 
 </Project>

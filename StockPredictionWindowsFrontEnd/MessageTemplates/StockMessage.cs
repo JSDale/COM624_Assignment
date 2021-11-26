@@ -1,6 +1,6 @@
 ﻿
 
-namespace GuiController
+namespace MessageTemplates
 {
 
     /// <summary>
