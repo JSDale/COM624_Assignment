@@ -53,13 +53,13 @@ class PredictingTheMarket:
         for i in forecast_set:
             next_date = next_unix
             next_unix += datetime.timedelta(days=1)
-            self.__formatted_dataframe.loc[next_date] = [np.nan for _ in range(len(self.__formatted_dataframe.columns)- 1)] + [i]
+            self.__formatted_dataframe.loc[next_date] = [np.nan for _ in range(len(self.__formatted_dataframe.columns)
+                                                                               - 1)] + [i]
 
         title = self.__generate_title()
         filepath = os.getcwd()
+        self.plot_graph(title)
         file_location = f'{filepath}\\Stock_Data\\{title}.png'
-        self.plot_graph(file_location, title)
-
         PredictingTheMarket.__send_message_over_rabbit_mq(file_location, str(confidence))
 
     def __confidence_of_model(self, model, X_test, y_test):
@@ -113,23 +113,24 @@ class PredictingTheMarket:
         next_unix = last_unix + datetime.timedelta(days=1)
         return next_unix
 
-    def plot_graph(self, file_location, title):
+    def plot_graph(self, title):
         plt.clf()
-        plt.savefig(file_location)
+        save_to_files = SavingToFiles.SaveToFiles()
+        save_to_files.save_graph_as_png(f'{title}.png')
         self.__formatted_dataframe['Adj Close'].tail(500).plot()
         self.__formatted_dataframe['Forecast'].tail(500).plot()
         plt.legend(loc=4)
         plt.xlabel('Date')
         plt.ylabel('Price')
         plt.title(title)
-        plt.savefig(file_location)
+        save_to_files.save_graph_as_png(f'{title}.png')
 
     def __select_model(self, X_train, y_train):
         if self.__model_type.lower() == 'linear regression':
             return Lr.LinearRegressionModel.apply_linear_regression(X_train, y_train)
-        elif self.__model_type.lower() == 'polynomial 2d':
+        elif self.__model_type.lower() == 'polynomial regression 2d':
             return Pr2.PolynomialRegressionTwoDimensional.apply_quadratic_regression_two_dimensions(X_train, y_train)
-        elif self.__model_type.lower() == 'polynomial 3d':
+        elif self.__model_type.lower() == 'polynomial regression 3d':
             return Pr3.PolynomialThreeDimensional.apply_quadratic_regression_three_dimensional(X_train, y_train)
         elif self.__model_type.lower() == 'k nearest neighbour':
             return Knn.KNearestNeighbour.apply_k_nearest_neighbour(X_train, y_train)

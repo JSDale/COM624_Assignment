@@ -30,7 +30,7 @@ class RabbitMqRequestReceiver:
         try:
             main.prediction_testing(message.Ticker, message.Source, message.ModelType)
         except Exception as e:
-            stock_message = StockMessageDao.StockMessageDao("location", [f'Error: {str(e)}'])
+            stock_message = StockMessageDao.StockMessageDao("location", f'Error: {str(e)}')
             json_message = stock_message.toJSON()
 
             rmq_resp = RabbitMqResponder.RabbitMqResponder()
