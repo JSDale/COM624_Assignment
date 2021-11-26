@@ -13,9 +13,8 @@ container.
 ## Prerequisite
 
 - Python 3.9
-- Erlang
-- RabbitMQ service running
-- dotnet runtime 5
+- RabbitMQ docker service running.
+- dotnet runtime 5 on a windows 10 or later machine.
 
 ## How to run the application
 
