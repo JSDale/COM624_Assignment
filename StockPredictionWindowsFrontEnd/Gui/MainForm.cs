@@ -34,7 +34,7 @@ namespace Gui
             this.InitializeComponent();
             this.InitEventListeners();
             this.StartConsumer();
-            this.rmqSender.Initialize();
+            this.StartSender();
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Gui
         /// </summary>
         private void StartConsumer()
         {
-            var hostName = this.textBoxUsername.Text;
+            var hostName = this.textBoxHostname.Text;
             var username = this.textBoxUsername.Text;
             var password = this.textBoxPassword.Text;
             const string Queue = "resp_stock";
@@ -57,7 +57,9 @@ namespace Gui
         private void StartSender()
         {
             var hostname = this.textBoxHostname.Text;
-            this.rmqSender = new Sender(hostname);
+            var username = this.textBoxUsername.Text;
+            var password = this.textBoxPassword.Text;
+            this.rmqSender = new Sender(hostname, username, password);
             this.rmqSender.Initialize();
         }
 

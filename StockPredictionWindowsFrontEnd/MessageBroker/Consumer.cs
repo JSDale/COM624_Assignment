@@ -11,7 +11,6 @@
 namespace MessageBroker
 {
     using System;
-    using System.Security.Cryptography;
     using System.Text;
 
     using CustomEvents;

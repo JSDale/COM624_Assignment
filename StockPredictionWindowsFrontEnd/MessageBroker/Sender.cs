@@ -24,11 +24,29 @@ namespace MessageBroker
         /// </summary>
         private readonly string hostname;
 
+        /// <summary>
+        /// The username to connect to RMQ with
+        /// </summary>
+        private readonly string username;
+
+        /// <summary>
+        /// The password to connect to RMQ with.
+        /// </summary>
+        private readonly string password;
+
         private IConnection connection;
 
-        public Sender(string hostname)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Sender"/> class.
+        /// </summary>
+        /// <param name="hostname">The hostname of device running RMQ</param>
+        /// <param name="username">The username to connect to RMQ with</param>
+        /// <param name="password">The password to connect to RMQ with</param>
+        public Sender(string hostname, string username, string password)
         {
             this.hostname = hostname;
+            this.username = username;
+            this.password = password;
         }
 
         /// <summary>
@@ -38,7 +56,12 @@ namespace MessageBroker
         {
             try
             {
-                 var factory = new ConnectionFactory() { HostName = this.hostname };
+                 var factory = new ConnectionFactory()
+                 {
+                     HostName = this.hostname,
+                     UserName = this.username,
+                     Password = this.password
+                 };
                 this.connection = factory.CreateConnection();
             }
             catch
