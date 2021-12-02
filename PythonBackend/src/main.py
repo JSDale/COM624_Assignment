@@ -1,5 +1,6 @@
 import sys
 
+from ExtractingCommandLineArgs import ExtractingCommandLineArgs
 from MessageBroker import ActiveConnecitons
 from MessageBroker import RabbitMqRequestReceiver
 from StockPredicting import PredictingTheMarket
@@ -9,6 +10,9 @@ from UnderstandingData import PandasStockPredictor
 
 def main():
     try:
+        hostname = ExtractingCommandLineArgs.get_hostname(sys.argv)
+        username = ExtractingCommandLineArgs.get_username(sys.argv)
+        password = ExtractingCommandLineArgs.get_password(sys.argv)
         rabbitmq_request_receiver = RabbitMqRequestReceiver.RabbitMqRequestReceiver()
         rabbitmq_request_receiver.initialize()
     except KeyboardInterrupt:
@@ -17,6 +21,8 @@ def main():
         sys.exit(0)
     except SystemExit:
         ActiveConnecitons.close_connections()
+    except Exception as e:
+        print(str(e))
 
 
 def prediction_testing(ticker, source, model):

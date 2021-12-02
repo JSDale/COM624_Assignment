@@ -1,6 +1,7 @@
 import json
 
 import pika
+from pika import PlainCredentials
 
 import main
 from MessageBroker import ActiveConnecitons, StockMessageDao, RabbitMqResponder
@@ -11,11 +12,19 @@ class RabbitMqRequestReceiver:
 
     __broker = 'localhost'
     __queue = 'StockExchange'
+    __username = 'guest'
+    __password = 'guest'
     __routing_key = 'StockExchange'
     __channel = None
 
+    def __init__(self, hostname, username, password):
+        self.__broker = hostname
+        self.__username = username
+        self.__password = password
+
     def initialize(self):
-        connection = pika.BlockingConnection(pika.ConnectionParameters(self.__broker))
+        credentials = PlainCredentials(self.__username, self.__password)
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.__broker, credentials=credentials))
         ActiveConnecitons.active_connections.append(connection)
         self.__channel = connection.channel()
         self.__channel.queue_declare(queue=self.__queue, auto_delete=True)
