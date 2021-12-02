@@ -12,6 +12,7 @@ class SaveToFiles:
         if not filepath_exists:
             os.mkdir(f'{self.__filepath}{data_dir}')
         plt.savefig(f'{self.__filepath}/Stock_Data/{filename}')
+        # plt.savefig(f'C:/Dev/{filename}')
 
     def save_to_json(self, raw_dataframe, filename):
         data_dir = '/Stock_Data/'

@@ -13,7 +13,7 @@ def main():
         hostname = ExtractingCommandLineArgs.get_hostname(sys.argv)
         username = ExtractingCommandLineArgs.get_username(sys.argv)
         password = ExtractingCommandLineArgs.get_password(sys.argv)
-        rabbitmq_request_receiver = RabbitMqRequestReceiver.RabbitMqRequestReceiver()
+        rabbitmq_request_receiver = RabbitMqRequestReceiver.RabbitMqRequestReceiver(hostname, username, password)
         rabbitmq_request_receiver.initialize()
     except KeyboardInterrupt:
         print('closing active connections, stand by...')
