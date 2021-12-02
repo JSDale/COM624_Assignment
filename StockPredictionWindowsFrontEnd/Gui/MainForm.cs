@@ -87,7 +87,7 @@ namespace Gui
         private void ShowErrorMessage(string errorMessage)
         {
             const string Title = "Error";
-            MessageBox.Show(errorMessage,acp Title);
+            MessageBox.Show(errorMessage,Title);
         }
 
         /// <summary>
