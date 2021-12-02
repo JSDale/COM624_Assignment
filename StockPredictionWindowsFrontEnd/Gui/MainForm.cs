@@ -2,19 +2,29 @@
 
 namespace Gui
 {
-    using MessageBroker;
-    using MessageTemplates;
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using System.Windows.Forms;
+
+    using MessageBroker;
+
+    using MessageTemplates;
 
     /// <summary>
     /// The main form for the application
     /// </summary>
     public partial class MainForm : Form
     {
-        private readonly Sender rmqSender = new Sender("localhost");
+        /// <summary>
+        /// The publisher.
+        /// </summary>
+        private Sender rmqSender;
+
+        /// <summary>
+        /// Consumes messages.
+        /// </summary>
+        private Consumer consumer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainForm"/> class.
@@ -32,11 +42,23 @@ namespace Gui
         /// </summary>
         private void StartConsumer()
         {
-            const string HostName = "localhost";
+            var hostName = this.textBoxUsername.Text;
+            var username = this.textBoxUsername.Text;
+            var password = this.textBoxPassword.Text;
             const string Queue = "resp_stock";
-            var consumer = new Consumer(HostName, Queue);
-            consumer.Initialize();
-            Task.Run(() => consumer.Consume());
+            this.consumer = new Consumer(hostName, Queue, username, password);
+            this.consumer.Initialize();
+            Task.Run(() => this.consumer.Consume());
+        }
+
+        /// <summary>
+        /// Starts the sender.
+        /// </summary>
+        private void StartSender()
+        {
+            var hostname = this.textBoxHostname.Text;
+            this.rmqSender = new Sender(hostname);
+            this.rmqSender.Initialize();
         }
 
         /// <summary>
@@ -61,10 +83,11 @@ namespace Gui
         /// <summary>
         /// Displays an error message in a message box.
         /// </summary>
-        /// <param name="errorMessage">The message to display, it is stored in the model confidence param</param>
+        /// <param name="errorMessage">The message to display, it is stored in the model confidence parameter</param>
         private void ShowErrorMessage(string errorMessage)
         {
-            MessageBox.Show(errorMessage, "Error");
+            const string Title = "Error";
+            MessageBox.Show(errorMessage,acp Title);
         }
 
         /// <summary>
@@ -127,27 +150,51 @@ namespace Gui
             this.rmqSender.GetPredictions(message);
         }
 
+        /// <summary>
+        /// Guard clauses for entering stock data.
+        /// </summary>
+        /// <param name="ticker">the ticker</param>
+        /// <param name="source">the source</param>
+        /// <param name="modelType">the model type</param>
+        /// <returns>If the data is proceedable</returns>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
         private bool UserEnteredDataOk(string ticker, string source, string modelType)
         {
-            if (ticker == "")
+            const string Title = "Error"; 
+
+            if (ticker == string.Empty)
             {
-                MessageBox.Show("Please enter a Ticker in the box, example: AAPL", "Error");
+                MessageBox.Show(@"Please enter a Ticker in the box, example: AAPL", Title);
                 return false;
             }
 
-            if (source == "")
+            if (source == string.Empty)
             {
-                MessageBox.Show("Please select an information source.", "Error");
+                MessageBox.Show(@"Please select an information source.", Title);
                 return false;
             }
 
-            if (modelType == "")
+            if (modelType == string.Empty)
             {
-                MessageBox.Show("Please select a model to use.", "Error");
+                MessageBox.Show(@"Please select a model to use.", Title);
                 return false;
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// The event handler for when the apply config button is pressed.
+        /// </summary>
+        /// <param name="sender">The context</param>
+        /// <param name="e">The event arguments</param>
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", Justification = "Reviewed. Suppression is OK here.")]
+        private void buttonApplyConfig_Click(object sender, EventArgs e)
+        {
+            this.consumer.Dispose();
+            this.rmqSender.Dispose();
+            this.StartConsumer();
+            this.StartSender();
         }
     }
 }

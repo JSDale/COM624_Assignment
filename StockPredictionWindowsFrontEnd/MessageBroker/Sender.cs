@@ -12,7 +12,6 @@ namespace MessageBroker
 {
     using System;
     using System.Text;
-    using MessageTemplates;
     using RabbitMQ.Client;
 
     /// <summary>
@@ -24,11 +23,6 @@ namespace MessageBroker
         /// The hostname for rabbitMQ
         /// </summary>
         private readonly string hostname;
-
-        /// <summary>
-        /// Creates the connection to rabbitMQ.
-        /// </summary>
-        private  ConnectionFactory factory;
 
         private IConnection connection;
 
@@ -44,7 +38,7 @@ namespace MessageBroker
         {
             try
             {
-                this.factory = new ConnectionFactory() { HostName = this.hostname };
+                 var factory = new ConnectionFactory() { HostName = this.hostname };
                 this.connection = factory.CreateConnection();
             }
             catch
@@ -56,11 +50,10 @@ namespace MessageBroker
         /// <summary>
         /// Sends the messages to RabbitMQ
         /// </summary>
-        /// <param name="ticker">The abbreviation for the company used on the stock market</param>
-        /// <param name="stockInfoSource">Where the stock information is gathered</param>
-        /// <param name="modelType">The type of model to used to predict.</param>
+        /// <param name="messageAsJson">The message to publish.</param>
         public void GetPredictions(string messageAsJson)
-        {
+        { 
+            // ReSharper disable once ConvertToUsingDeclaration
             using (var channel = this.connection.CreateModel())
             {
                 //// These settings must be the same as the ones in the back-end
@@ -69,7 +62,6 @@ namespace MessageBroker
                 var body = Encoding.UTF8.GetBytes(messageAsJson);
 
                 channel.BasicPublish(exchange: string.Empty, routingKey: "StockExchange", basicProperties: null, body: body);
-                
             }
         }
 
@@ -80,7 +72,6 @@ namespace MessageBroker
         {
             this.connection?.Dispose();
             this.connection = null;
-            this.factory = null;
         }
     }
 }

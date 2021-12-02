@@ -11,6 +11,7 @@
 namespace MessageBroker
 {
     using System;
+    using System.Security.Cryptography;
     using System.Text;
 
     using CustomEvents;
@@ -34,6 +35,16 @@ namespace MessageBroker
         private readonly string queueName;
 
         /// <summary>
+        /// The username to use with rabbitMQ. Must be an available user in RMQ
+        /// </summary>
+        private readonly string username;
+
+        /// <summary>
+        /// The password to use with RMQ. Must be an available user in RMQ
+        /// </summary>
+        private readonly string password;
+
+        /// <summary>
         /// The rabbit MQ connection.
         /// </summary>
         private IConnection connection;
@@ -53,10 +64,12 @@ namespace MessageBroker
         /// </summary>
         /// <param name="hostName">The address of the rabbitMQ broker host.</param>
         /// <param name="queueName">The name of the queue to consume on.</param>
-        public Consumer(string hostName, string queueName)
+        public Consumer(string hostName, string queueName, string username, string password)
         {
             this.hostName = hostName;
             this.queueName = queueName;
+            this.username = username;
+            this.password = password;
         }
 
         /// <summary>
@@ -79,7 +92,13 @@ namespace MessageBroker
         {
             try
             {
-                var factory = new ConnectionFactory() { HostName = this.hostName };
+                var factory = new ConnectionFactory() 
+                {
+                    HostName = this.hostName,
+                    UserName = this.username,
+                    Password = this.password
+                };
+
                 // ReSharper disable once ConvertToUsingDeclaration
                 this.connection = factory.CreateConnection();
             }
@@ -100,6 +119,18 @@ namespace MessageBroker
             this.consumer.Received += this.WhenConsumed;
         }
 
+        /// <summary>
+        /// Disposes objects.
+        /// </summary>
+        public void Dispose()
+        {
+            this.channel?.Dispose();
+            this.channel = null;
+
+            this.connection?.Dispose();
+            this.connection = null;
+        }
+
         private void WhenConsumed(object model, BasicDeliverEventArgs ea)
         {
             var body = ea.Body.ToArray();
@@ -112,18 +143,6 @@ namespace MessageBroker
             }
 
             UpdateGui.InvokeUpdateStock(obj);
-        }
-
-        /// <summary>
-        /// Disposes objects.
-        /// </summary>
-        public void Dispose()
-        {
-            this.channel?.Dispose();
-            this.channel = null;
-
-            this.connection?.Dispose();
-            this.connection = null;
         }
     }
 }
