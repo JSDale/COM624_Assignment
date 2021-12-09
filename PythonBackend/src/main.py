@@ -25,16 +25,6 @@ def main():
         print(str(e))
 
 
-def prediction_testing(ticker, source, model):
-    predicting = PredictingTheMarket.PredictingTheMarket()
-    try:
-        dataframe = predicting.get_stock_dataframe(ticker, source, model)
-    except Exception:
-        raise Exception("Could not get data. Ensure the source or ticker is correct.")
-        # TODO log
-    predicting.predict(dataframe)
-
-
 def risk_return_plotting():
     var = CompareCompetitors.CompareCompetitors()
     tickers = ['LOCK.L', 'QQ.L', 'HLMA.L']

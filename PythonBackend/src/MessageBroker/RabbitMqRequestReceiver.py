@@ -1,11 +1,11 @@
 import json
-
 import pika
 from pika import PlainCredentials
 
-import main
 from MessageBroker import ActiveConnecitons, StockMessageDao, RabbitMqResponder
 from MessageHandlers import RequestDao
+from StockPredicting import TimeSeries_arima
+from StockPredicting.PredictingTheMarket import PredictingTheMarket
 
 
 class RabbitMqRequestReceiver:
@@ -37,7 +37,14 @@ class RabbitMqRequestReceiver:
         data = json.loads(message)
         message = RequestDao.RequestDao(**data)
         try:
-            main.prediction_testing(message.Ticker, message.Source, message.ModelType)
+            if message.ModelType.lower() == 'arima':
+                arima = TimeSeries_arima.TimeSeriesArima()
+                dataframe = arima.get_data_frame(message.Ticker, message.Source, '2021-01-01')
+                arima.predict(dataframe)
+            else:
+                predicting = PredictingTheMarket()
+                dataframe = predicting.get_stock_dataframe(message.Ticker, message.Source, message.ModelType)
+                predicting.predict(dataframe)
         except Exception as e:
             stock_message = StockMessageDao.StockMessageDao("location", f'Error: {str(e)}')
             json_message = stock_message.toJSON()
