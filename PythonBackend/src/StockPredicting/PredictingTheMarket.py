@@ -1,6 +1,4 @@
 import math
-import os
-
 import pandas_datareader.data as web
 import datetime
 import numpy as np
@@ -8,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from sklearn import preprocessing, model_selection
 from FileManipulation import SavingToFiles
-from MessageBroker import RabbitMqResponder, StockMessageDao
+from MessageBroker import StockMessageDao
 from StockPredicting import LinearRegressionModel as Lr
 from StockPredicting import PolynomialRegressionTwoDimensional as Pr2
 from StockPredicting import PolynomialThreeDimensional as Pr3
@@ -24,6 +22,12 @@ class PredictingTheMarket:
     __formatted_dataframe = None
     __ticker = None
     __model_type = None
+    __filepath = None
+    __rmq_resp = None
+
+    def __init__(self, filepath, rabbit_mq_responder):
+        self.__filepath = filepath
+        self.__rmq_resp = rabbit_mq_responder
 
     def get_stock_dataframe(self, ticker, source, model_type):
         print('getting data...')
@@ -39,17 +43,17 @@ class PredictingTheMarket:
 
     def predict(self, dataframe):
         self.__get_dfreg(dataframe)
-        X, forecast_out = self.preprocess_x()
-        X, X_lately = PredictingTheMarket.__get_x_and_y_values(X, forecast_out)
+        x, forecast_out = self.preprocess_x()
+        x, x_lately = PredictingTheMarket.__get_x_and_y_values(x, forecast_out)
         y = self.__get_y_(forecast_out)
 
-        X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.2)
-        model = self.__select_model(X_train, y_train)
+        x_train, x_test, y_train, y_test = model_selection.train_test_split(x, y, test_size=0.2)
+        model = self.__select_model(x_train, y_train)
 
-        confidence = self.__confidence_of_model(model, X_test, y_test)
+        confidence = self.__confidence_of_model(model, x_test, y_test)
 
         next_unix = self.get_next_unix_date()
-        forecast_set = self.forecast(X_lately, model, confidence, forecast_out)
+        forecast_set = self.forecast(x_lately, model, confidence, forecast_out)
         for i in forecast_set:
             next_date = next_unix
             next_unix += datetime.timedelta(days=1)
@@ -57,35 +61,32 @@ class PredictingTheMarket:
                                                                                - 1)] + [i]
 
         title = self.__generate_title()
-        filepath = os.getcwd()
         self.plot_graph(title)
-        file_location = f'{filepath}\\Stock_Data\\{title}.png'
-        PredictingTheMarket.__send_message_over_rabbit_mq(file_location, str(confidence))
+        file_location = f'{self.__filepath}\\{title}'
+        self.__send_message_over_rabbit_mq(file_location, str(confidence))
 
-    def __confidence_of_model(self, model, X_test, y_test):
-        return model.score(X_test, y_test)
+    def __confidence_of_model(self, model, x_test, y_test):
+        return model.score(x_test, y_test)
 
     def __generate_title(self):
-        title = f'{self.__ticker}-{datetime.datetime.now()}'
+        title = f'{self.__model_type}-{self.__ticker}-{datetime.datetime.now()}'
         title = title.replace(' ', '_')
         title = title.replace(':', '-')
         return title
 
-    @staticmethod
-    def __send_message_over_rabbit_mq(file_location, predictions):
-        location = file_location
+    def __send_message_over_rabbit_mq(self, file_location, predictions):
+        location = f'{file_location}.png'
         stock_message = StockMessageDao.StockMessageDao(location, predictions)
         json = stock_message.toJSON()
-        rmq_resp = RabbitMqResponder.RabbitMqResponder()
-        rmq_resp.respond_with_prediction(json)
+        self.__rmq_resp.respond_with_prediction(json)
 
     @staticmethod
-    def __get_x_and_y_values(X, forecast_out):
+    def __get_x_and_y_values(x, forecast_out):
         # Finally We want to find Data Series of late X and early X (train) for model generation and evaluation
-        X_lately = X[-forecast_out:]
-        X = X[:-forecast_out]
-        print('Dimension of X', X.shape)
-        return X, X_lately
+        x_lately = x[-forecast_out:]
+        x = x[:-forecast_out]
+        print('Dimension of X', x.shape)
+        return x, x_lately
 
     def __get_y_(self, forecast_out):
         # Separate label and identify it as y
@@ -94,18 +95,18 @@ class PredictingTheMarket:
         print('Dimension of y', y.shape)
         return y
 
-    def forecast(self, X_lately, model, confidence, forecast_out):
-        forecast_set = model.predict(X_lately)
+    def forecast(self, x_lately, model, confidence, forecast_out):
+        forecast_set = model.predict(x_lately)
         self.__formatted_dataframe['Forecast'] = np.nan
         print(forecast_set, confidence, forecast_out)
         return forecast_set
 
     def preprocess_x(self):
         forecast_out = self.__format_data()
-        X = self.__extract_value_of_x(forecast_out)
+        x = self.__extract_value_of_x(forecast_out)
         # Scale the X so that everyone can have the same distribution for linear regression
-        X = preprocessing.scale(X)
-        return X, forecast_out
+        x = preprocessing.scale(x)
+        return x, forecast_out
 
     def get_next_unix_date(self):
         last_date = self.__formatted_dataframe.iloc[-1].name
@@ -116,24 +117,24 @@ class PredictingTheMarket:
     def plot_graph(self, title):
         plt.clf()
         save_to_files = SavingToFiles.SaveToFiles()
-        save_to_files.save_graph_as_png(f'{title}.png')
+        save_to_files.save_graph_as_png(title, self.__filepath)
         self.__formatted_dataframe['Adj Close'].tail(500).plot()
         self.__formatted_dataframe['Forecast'].tail(500).plot()
         plt.legend(loc=4)
         plt.xlabel('Date')
         plt.ylabel('Price')
         plt.title(title)
-        save_to_files.save_graph_as_png(f'{title}.png')
+        save_to_files.save_graph_as_png(title, self.__filepath)
 
-    def __select_model(self, X_train, y_train):
+    def __select_model(self, x_train, y_train):
         if self.__model_type.lower() == 'linear regression':
-            return Lr.LinearRegressionModel.apply_linear_regression(X_train, y_train)
+            return Lr.LinearRegressionModel.apply_linear_regression(x_train, y_train)
         elif self.__model_type.lower() == 'polynomial regression 2d':
-            return Pr2.PolynomialRegressionTwoDimensional.apply_quadratic_regression_two_dimensions(X_train, y_train)
+            return Pr2.PolynomialRegressionTwoDimensional.apply_quadratic_regression_two_dimensions(x_train, y_train)
         elif self.__model_type.lower() == 'polynomial regression 3d':
-            return Pr3.PolynomialThreeDimensional.apply_quadratic_regression_three_dimensional(X_train, y_train)
+            return Pr3.PolynomialThreeDimensional.apply_quadratic_regression_three_dimensional(x_train, y_train)
         elif self.__model_type.lower() == 'k nearest neighbour':
-            return Knn.KNearestNeighbour.apply_k_nearest_neighbour(X_train, y_train)
+            return Knn.KNearestNeighbour.apply_k_nearest_neighbour(x_train, y_train)
 
         raise Exception('The model is not correct, choose again.')
 
@@ -141,8 +142,8 @@ class PredictingTheMarket:
         # Separating the label here, we want to predict the AdjClose
         forecast_col = 'Adj Close'
         self.__formatted_dataframe['label'] = self.__formatted_dataframe[forecast_col].shift(-forecast_out)
-        X = np.array(self.__formatted_dataframe.drop(['label'], 1))
-        return X
+        x = np.array(self.__formatted_dataframe.drop(['label'], 1))
+        return x
 
     def __format_data(self):
         # Drop missing value

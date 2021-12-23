@@ -6,13 +6,12 @@ class SaveToFiles:
 
     __filepath = os.getcwd()
 
-    def save_graph_as_png(self, filename):
-        data_dir = '/Stock_Data/'
-        filepath_exists = os.path.exists(f'{self.__filepath}{data_dir}')
+    @staticmethod
+    def save_graph_as_png(filename, file_path):
+        filepath_exists = os.path.exists(file_path)
         if not filepath_exists:
-            os.mkdir(f'{self.__filepath}{data_dir}')
-        plt.savefig(f'{self.__filepath}/Stock_Data/{filename}')
-        # plt.savefig(f'C:/Dev/{filename}')
+            os.mkdir(file_path)
+        plt.savefig(f'{file_path}\\{filename}.png')
 
     def save_to_json(self, raw_dataframe, filename):
         data_dir = '/Stock_Data/'

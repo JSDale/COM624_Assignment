@@ -13,8 +13,9 @@ def main():
         hostname = ExtractingCommandLineArgs.get_hostname(sys.argv)
         username = ExtractingCommandLineArgs.get_username(sys.argv)
         password = ExtractingCommandLineArgs.get_password(sys.argv)
-        rabbitmq_request_receiver = RabbitMqRequestReceiver.RabbitMqRequestReceiver(hostname, username, password)
-        rabbitmq_request_receiver.initialize()
+        filepath = ExtractingCommandLineArgs.get_filepath(sys.argv)
+        rabbitmq = RabbitMqRequestReceiver.RabbitMqRequestReceiver(hostname, username, password, filepath)
+        rabbitmq.initialize()
     except KeyboardInterrupt:
         print('closing active connections, stand by...')
         ActiveConnecitons.close_connections()

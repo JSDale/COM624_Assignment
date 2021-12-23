@@ -10,7 +10,8 @@ class RabbitMqResponder:
     __routing_key = 'resp_stock'
     __channel = None
 
-    def __init__(self):
+    def __init__(self, hostname):
+        self.__host = hostname
         self.__initialize_responder()
 
     def __initialize_responder(self):

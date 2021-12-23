@@ -25,3 +25,11 @@ class ExtractingCommandLineArgs:
                 password = args[i + 1].replace('\'', '')
                 return password
         raise Exception('Hostname not found use --password')
+
+    @staticmethod
+    def get_filepath(args):
+        for i in range(len(args)):
+            if args[i] == '--filepath':
+                filepath = args[i + 1].replace('\'', '')
+                return filepath
+        raise Exception('filepath not found use --filepath')

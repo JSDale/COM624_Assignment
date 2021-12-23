@@ -7,7 +7,6 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-
 namespace MessageBroker
 {
     using System;
@@ -63,6 +62,8 @@ namespace MessageBroker
         /// </summary>
         /// <param name="hostName">The address of the rabbitMQ broker host.</param>
         /// <param name="queueName">The name of the queue to consume on.</param>
+        /// <param name="username">RabbitMQ username.</param>
+        /// <param name="password">RabbitMQ password.</param>
         public Consumer(string hostName, string queueName, string username, string password)
         {
             this.hostName = hostName;
