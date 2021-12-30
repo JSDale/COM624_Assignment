@@ -4,8 +4,9 @@ import pandas_datareader.data as web
 from datetime import datetime
 from statsmodels.tsa.arima.model import ARIMA
 from sklearn.metrics import mean_squared_error
+from statsmodels.tsa.stattools import adfuller
+
 from FileManipulation import SavingToFiles as save
-from MessageBroker.RabbitMqResponder import RabbitMqResponder
 from MessageBroker.StockMessageDao import StockMessageDao
 
 
@@ -24,37 +25,45 @@ class TimeSeriesArima:
         stock_message = StockMessageDao(f'{self.__filepath}\\{filename}', predictions)
         json = stock_message.toJSON()
         self.__rmq_resp.respond_with_prediction(json)
-        print(f'Sent: {json}')
 
     def get_data_frame(self, source, start_date):
         dataframe = web.DataReader(self.__ticker, source, start=start_date, end=datetime.now())
+        save.SaveToFiles.save_to_json(dataframe, f'{self.__filepath}', f'{self.__ticker}-StockData')
         return dataframe
 
     def predict(self, data_frame):
-        data_frame_close = data_frame['Close']
+        data_frame_close = data_frame['Adj Close']
         training_data = data_frame_close[0:int(len(data_frame_close) * 0.7)]
         test_data = data_frame_close[int(len(data_frame_close) * 0.7):]
 
         history = [x for x in training_data]
         model_predictions = []
         n_test_observations = len(test_data)
+        # moving_averages = self.__calculate_moving_averages(data_frame_close)
+        j = 0
 
         for time_point in range(n_test_observations):
-            # Need to find a wat to auto-generate params below.
-            # 0 = moving average.
-            # 1 = I (something to do with difference.
-            # 4 = AR
-            correlation = self.get_correlation(data_frame)
-            model = ARIMA(history, order=(4, 1, int(correlation)))
+            ar = 4
+            i = 1
+            ma = int(self.__get_correlation(data_frame))
+            # ma = int(moving_averages[j])
+            # if ma < 0:
+            # ma = ma - (ma*2)
+            # Need to find a way to auto-generate params.
+            model = ARIMA(history, order=(ar, i, ma))
             model_fit = model.fit()
-            output = model_fit.forecast()
+            output = model_fit.forecast(dynamic=False)
             yhat = output[0]
             model_predictions.append(yhat)
             true_test_value = test_data[time_point]
             history.append(true_test_value)
+            j += 1
 
         mse_error = mean_squared_error(test_data, model_predictions)
-        print('Testing Mean Squared Error is {}'.format(mse_error))
+        result = adfuller(data_frame_close)
+        print('ADF Statistic: %f' % result[0])
+        print('p-value: %f' % result[1])
+        print(f'Testing Mean Squared Error is {mse_error}')
 
         save_to_files = save.SaveToFiles()
         plt.clf()
@@ -66,7 +75,6 @@ class TimeSeriesArima:
             test_set_range,
             model_predictions,
             color='blue',
-            marker='o',
             linestyle='dashed',
             label='Predicted Price')
 
@@ -84,7 +92,24 @@ class TimeSeriesArima:
         save_to_files.save_graph_as_png(title, self.__filepath)
         self.__send_message_over_rabbit_mq(mse_error, f'{title}.png')
 
-    def get_correlation(self, data_frame):
+    def __calculate_moving_averages(self, data_frame):
+        arr = data_frame.array
+        moving_averages = []
+
+        for i in range(len(arr)):
+            try:
+                difference = int(arr[i+1]) - int(arr[i])
+                moving_averages.append(difference)
+                i += 1
+            except:
+                moving_averages.append(0)
+
+        print('moving averages: ')
+        print(moving_averages)
+        return moving_averages
+
+    @staticmethod
+    def __get_correlation(data_frame):
         restcomp = data_frame['Close'].pct_change()
         correlation = restcomp.corr
         return restcomp.mean()
