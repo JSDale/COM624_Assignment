@@ -4,6 +4,9 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <StartupObject>Gui.Program</StartupObject>
+    <Authors>SOLENTTECH</Authors>
+    <Product>Stock Predictor</Product>
   </PropertyGroup>
 
   <ItemGroup>

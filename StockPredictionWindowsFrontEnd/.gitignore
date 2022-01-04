@@ -12,6 +12,7 @@ TcpSettings.json
 *.user
 *.userosscache
 *.sln.docstates
+/python_published
 
 
 # User-specific files (MonoDevelop/Xamarin Studio)
