@@ -116,7 +116,7 @@ namespace MessageBroker
                 arguments: null);
 
             this.consumer = new EventingBasicConsumer(this.channel);
-            this.consumer.Received += this.WhenConsumed;
+            this.consumer.Received += WhenConsumed;
         }
 
         /// <summary>
@@ -131,7 +131,12 @@ namespace MessageBroker
             this.connection = null;
         }
 
-        private void WhenConsumed(object model, BasicDeliverEventArgs ea)
+        /// <summary>
+        /// The function used when a message is received from RMQ.
+        /// </summary>
+        /// <param name="model">The model</param>
+        /// <param name="ea">The event arguments from the message</param>
+        private static void WhenConsumed(object model, BasicDeliverEventArgs ea)
         {
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);

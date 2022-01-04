@@ -33,8 +33,8 @@ namespace Gui
         {
             this.InitializeComponent();
             this.InitEventListeners();
-            this.StartConsumer();
-            this.StartSender();
+            //// this.StartConsumer();
+            //// this.StartSender();
         }
 
         /// <summary>
@@ -193,8 +193,8 @@ namespace Gui
         [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", Justification = "Reviewed. Suppression is OK here.")]
         private void buttonApplyConfig_Click(object sender, EventArgs e)
         {
-            this.consumer.Dispose();
-            this.rmqSender.Dispose();
+            this.consumer?.Dispose();
+            this.rmqSender?.Dispose();
             this.StartConsumer();
             this.StartSender();
         }

@@ -8,8 +8,8 @@ from sklearn import preprocessing, model_selection
 from FileManipulation import SavingToFiles
 from MessageBroker import StockMessageDao
 from StockPredicting import LinearRegressionModel as Lr
-from StockPredicting import PolynomialRegressionTwoDimensional as Pr2
-from StockPredicting import PolynomialThreeDimensional as Pr3
+from StockPredicting import PolynomialRegressionSecondDegree as Pr2
+from StockPredicting import PolynomialThirdDegree as Pr3
 from StockPredicting import KNearestNeighbour as Knn
 
 
@@ -130,9 +130,9 @@ class PredictingTheMarket:
         if self.__model_type.lower() == 'linear regression':
             return Lr.LinearRegressionModel.apply_linear_regression(x_train, y_train)
         elif self.__model_type.lower() == 'polynomial regression 2d':
-            return Pr2.PolynomialRegressionTwoDimensional.apply_quadratic_regression_two_dimensions(x_train, y_train)
+            return Pr2.PolynomialRegressionSecondDegree.apply_quadratic_regression_second_degree(x_train, y_train)
         elif self.__model_type.lower() == 'polynomial regression 3d':
-            return Pr3.PolynomialThreeDimensional.apply_quadratic_regression_three_dimensional(x_train, y_train)
+            return Pr3.PolynomialThirdDegree.apply_quadratic_regression_third_degree(x_train, y_train)
         elif self.__model_type.lower() == 'k nearest neighbour':
             return Knn.KNearestNeighbour.apply_k_nearest_neighbour(x_train, y_train)
 

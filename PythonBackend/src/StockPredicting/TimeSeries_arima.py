@@ -6,7 +6,7 @@ from statsmodels.tsa.arima.model import ARIMA
 from sklearn.metrics import mean_squared_error
 from statsmodels.tsa.stattools import adfuller
 
-from FileManipulation import SavingToFiles as save
+from FileManipulation import SavingToFiles as Save
 from MessageBroker.StockMessageDao import StockMessageDao
 
 
@@ -28,7 +28,7 @@ class TimeSeriesArima:
 
     def get_data_frame(self, source, start_date):
         dataframe = web.DataReader(self.__ticker, source, start=start_date, end=datetime.now())
-        save.SaveToFiles.save_to_json(dataframe, f'{self.__filepath}', f'{self.__ticker}-StockData')
+        Save.SaveToFiles.save_to_json(dataframe, f'{self.__filepath}', f'{self.__ticker}-StockData')
         return dataframe
 
     def predict(self, data_frame):
@@ -38,23 +38,22 @@ class TimeSeriesArima:
 
         history = [x for x in training_data]
         model_predictions = []
-        n_test_observations = len(test_data)
-        # moving_averages = self.__calculate_moving_averages(data_frame_close)
+        number_test_observations = len(test_data)
         j = 0
 
-        for time_point in range(n_test_observations):
-            ar = 4
-            i = 1
-            ma = int(self.__get_correlation(data_frame))
-            # ma = int(moving_averages[j])
-            # if ma < 0:
-            # ma = ma - (ma*2)
-            # Need to find a way to auto-generate params.
-            model = ARIMA(history, order=(ar, i, ma))
+        for time_point in range(number_test_observations):
+            # number of lag observations in the model; also known as lag order.
+            p = 4
+            # the number of times that raw observations are differenced; also known as the degree of differencing.
+            d = 1
+            # the size of the moving average window; also known as the order of the moving average.
+            q = int(self.__get_correlation(data_frame))
+            # TODO find a way to auto-generate params.
+            model = ARIMA(history, order=(p, d, q))
             model_fit = model.fit()
             output = model_fit.forecast(dynamic=False)
-            yhat = output[0]
-            model_predictions.append(yhat)
+            y_hat = output[0]
+            model_predictions.append(y_hat)
             true_test_value = test_data[time_point]
             history.append(true_test_value)
             j += 1
@@ -65,7 +64,7 @@ class TimeSeriesArima:
         print('p-value: %f' % result[1])
         print(f'Testing Mean Squared Error is {mse_error}')
 
-        save_to_files = save.SaveToFiles()
+        save_to_files = Save.SaveToFiles()
         plt.clf()
         title = self.__generate_title()
         save_to_files.save_graph_as_png(title, self.__filepath)
@@ -91,22 +90,6 @@ class TimeSeriesArima:
 
         save_to_files.save_graph_as_png(title, self.__filepath)
         self.__send_message_over_rabbit_mq(mse_error, f'{title}.png')
-
-    def __calculate_moving_averages(self, data_frame):
-        arr = data_frame.array
-        moving_averages = []
-
-        for i in range(len(arr)):
-            try:
-                difference = int(arr[i+1]) - int(arr[i])
-                moving_averages.append(difference)
-                i += 1
-            except:
-                moving_averages.append(0)
-
-        print('moving averages: ')
-        print(moving_averages)
-        return moving_averages
 
     @staticmethod
     def __get_correlation(data_frame):
