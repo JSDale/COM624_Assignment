@@ -1,6 +1,6 @@
 ﻿
 
-namespace Gui
+namespace StockValuesPredictor
 {
     using System;
     using System.Diagnostics.CodeAnalysis;

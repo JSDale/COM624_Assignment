@@ -1,5 +1,5 @@
 ﻿
-namespace Gui
+namespace StockValuesPredictor
 {
     partial class MainForm
     {
@@ -29,6 +29,7 @@ namespace Gui
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tabControlMenu = new System.Windows.Forms.TabControl();
             this.EnterStockInfoPage = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -76,7 +77,7 @@ namespace Gui
             this.EnterStockInfoPage.Controls.Add(this.panel1);
             this.EnterStockInfoPage.Location = new System.Drawing.Point(4, 4);
             this.EnterStockInfoPage.Name = "EnterStockInfoPage";
-            this.EnterStockInfoPage.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.EnterStockInfoPage.Padding = new System.Windows.Forms.Padding(3);
             this.EnterStockInfoPage.Size = new System.Drawing.Size(839, 422);
             this.EnterStockInfoPage.TabIndex = 0;
             this.EnterStockInfoPage.Text = "Enter Stock To Predict";
@@ -159,7 +160,7 @@ namespace Gui
             this.tabPageGraph.Controls.Add(this.pictureBoxGraph);
             this.tabPageGraph.Location = new System.Drawing.Point(4, 4);
             this.tabPageGraph.Name = "tabPageGraph";
-            this.tabPageGraph.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPageGraph.Padding = new System.Windows.Forms.Padding(3);
             this.tabPageGraph.Size = new System.Drawing.Size(839, 422);
             this.tabPageGraph.TabIndex = 1;
             this.tabPageGraph.Text = "Prediction Graph";
@@ -267,6 +268,8 @@ namespace Gui
             this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(846, 456);
             this.Controls.Add(this.tabControlMenu);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(818, 495);
             this.Name = "MainForm";
             this.Text = "Stock Preditcting";
