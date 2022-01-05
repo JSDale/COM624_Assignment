@@ -37,7 +37,7 @@ container.
 I used PyCharm to create the python backend, wit a virtual environment. To get you up and running with the dependencies,
 I also included a requirements.txt file.
 
-- First, run `sh python -m venv <filepath of virtual env you want>`
-- Then, run `sh <filepath of virtual env>\Scripts\activate`
-- Finally, enter `sh pip install -r <filepath of project>\requirements.txt`
+- First, run `python -m venv <filepath of virtual env you want>`
+- Then, run `<filepath of virtual env>\Scripts\activate`
+- Finally, enter `pip install -r <filepath of project>\requirements.txt`
 - Then you can open the folder as a pycharm project and configure the interpretor to be the venv.
